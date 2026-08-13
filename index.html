@@ -3,86 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IA Local com Aprendizagem</title>
+  <title>IA Local Pro - Sistema de Bibliotecas</title>
   <style>
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      margin: 0;
       font-family: 'Segoe UI', Roboto, sans-serif;
-      background-color: #0f0f17;
+      background-color: #0d0d14;
       color: #cdd6f4;
       display: flex;
-      flex-direction: column;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       min-height: 100vh;
-      padding: 15px;
+      padding: 10px;
     }
 
     .widget-flutuante {
       width: 100%;
-      max-width: 380px;
-      background: #1a1a26;
+      max-width: 650px;
+      height: 94vh;
+      background: #161622;
       border-radius: 20px;
-      padding: 20px;
-      border: 1px solid #2e2e42;
+      padding: 15px;
+      border: 1px solid #2a2a3d;
       display: flex;
       flex-direction: column;
       align-items: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
     }
 
     .status-orb {
-      width: 80px;
-      height: 80px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
-      background: radial-gradient(circle, #7289da 0%, #1a1a26 70%);
-      margin-bottom: 15px;
+      background: radial-gradient(circle, #7289da 0%, #161622 70%);
+      margin-bottom: 10px;
       box-shadow: 0 0 20px #7289da;
+      flex-shrink: 0;
       transition: all 0.3s ease;
     }
 
-    .status-orb.pensando { background: radial-gradient(circle, #f1c40f 0%, #1a1a26 70%); box-shadow: 0 0 25px #f1c40f; }
-    .status-orb.aprendendo { background: radial-gradient(circle, #e67e22 0%, #1a1a26 70%); box-shadow: 0 0 25px #e67e22; }
-    .status-orb.falando { background: radial-gradient(circle, #2ecc71 0%, #1a1a26 70%); box-shadow: 0 0 30px #2ecc71; }
+    .status-orb.pensando { background: radial-gradient(circle, #f1c40f 0%, #161622 70%); box-shadow: 0 0 25px #f1c40f; }
+    .status-orb.aprendendo { background: radial-gradient(circle, #e67e22 0%, #161622 70%); box-shadow: 0 0 25px #e67e22; }
+    .status-orb.falando { background: radial-gradient(circle, #2ecc71 0%, #161622 70%); box-shadow: 0 0 30px #2ecc71; }
 
     .chat-box {
       width: 100%;
-      background: #111118;
-      border: 1px solid #333;
-      border-radius: 12px;
-      padding: 12px;
-      min-height: 120px;
-      max-height: 200px;
+      flex: 1;
+      background: #0b0b12;
+      border: 1px solid #28283a;
+      border-radius: 15px;
+      padding: 15px;
       overflow-y: auto;
       margin-bottom: 12px;
-      font-size: 0.9em;
-      line-height: 1.4;
+      font-size: 0.95em;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
-    .msg-user { color: #7289da; margin-bottom: 6px; font-weight: bold; }
-    .msg-ia { color: #2ecc71; margin-bottom: 6px; }
-    .msg-sistema { color: #e67e22; margin-bottom: 6px; font-style: italic; }
+    .msg-user { color: #7289da; background: #1c1c2e; padding: 10px 14px; border-radius: 12px; align-self: flex-end; max-width: 85%; }
+    .msg-ia { color: #2ecc71; background: #12221a; padding: 10px 14px; border-radius: 12px; align-self: flex-start; max-width: 85%; }
+    .msg-sistema { color: #e67e22; background: #261c14; padding: 8px 12px; border-radius: 10px; align-self: center; font-style: italic; font-size: 0.88em; }
 
-    .input-group { width: 100%; display: flex; gap: 8px; margin-bottom: 10px; }
+    .input-group { width: 100%; display: flex; gap: 8px; flex-shrink: 0; }
 
-    input[type="text"] {
+    textarea {
       flex: 1;
-      background: #252538;
-      border: 1px solid #444;
-      border-radius: 10px;
-      padding: 10px;
+      background: #202030;
+      border: 1px solid #3b3b54;
+      border-radius: 12px;
+      padding: 12px;
       color: #fff;
-      font-size: 0.9em;
+      font-size: 0.95em;
       outline: none;
+      resize: none;
+      height: 50px;
+      font-family: inherit;
     }
 
     .btn {
       background: #7289da;
       color: #fff;
       border: none;
-      padding: 10px 14px;
-      border-radius: 10px;
+      padding: 0 20px;
+      border-radius: 12px;
       font-weight: bold;
       cursor: pointer;
     }
@@ -90,7 +95,8 @@
     .info-memoria {
       font-size: 0.75em;
       color: #888;
-      margin-top: 5px;
+      margin-top: 6px;
+      flex-shrink: 0;
     }
   </style>
 </head>
@@ -99,16 +105,14 @@
   <div class="widget-flutuante">
     <div id="orb" class="status-orb"></div>
     
-    <div class="chat-box" id="chatBox">
-      <div class="msg-ia"><b>IA:</b> Olá, Chefão! Estou pronta. O meu cérebro aprende contigo em tempo real!</div>
-    </div>
+    <div class="chat-box" id="chatBox"></div>
 
     <div class="input-group">
-      <input type="text" id="userInput" placeholder="Escreve uma pergunta ou instrução..." onkeypress="if(event.key==='Enter') processarMensagem()">
+      <textarea id="userInput" placeholder="Escreve uma pergunta ou cole uma lista para me ensinar..." onkeydown="checarEnter(event)"></textarea>
       <button class="btn" onclick="processarMensagem()">Enviar</button>
     </div>
 
-    <div class="info-memoria" id="infoMemoria">Palavras/Frases aprendidas: 0</div>
+    <div class="info-memoria" id="infoMemoria">Bibliotecas ativas: 0 | Conhecimento salvo: 0</div>
   </div>
 
   <script>
@@ -117,128 +121,200 @@
     const userInput = document.getElementById('userInput');
     const infoMemoria = document.getElementById('infoMemoria');
 
-    // Base de conhecimento inicial integrada
-    const conhecimentoBase = {
-      "olá": "Olá, Chefão! Como posso te ajudar hoje?",
-      "ola": "Olá, Chefão! Tamo junto!",
-      "tudo bem": "Tudo ótimo por aqui! E contigo, Kota?",
-      "quem és tu": "Sou a tua IA de aprendizagem local! Quanto mais conversamos, mais inteligente eu fico.",
-      "como aprender": "Para me ensinar algo, escreve: ensinar [pergunta] = [resposta]. Exemplo: ensinar qual o melhor carro = E30 de drift!",
-      "estudos": "Foco nos livros, Chefão! O conhecimento é o verdadeiro kumbu do futuro."
+    // Estrutura de Bibliotecas por Categoria
+    let bibliotecas = JSON.parse(localStorage.getItem('ia_bibliotecas')) || {
+      "Gerais": {
+        "olá": "Olá! Como posso te ajudar hoje?",
+        "tudo bem": "Tudo ótimo por aqui! E contigo?"
+      },
+      "Tecnologia": {
+        "o que é html": "HTML é a linguagem de marcação usada para criar a estrutura das páginas e sites.",
+        "o que é javascript": "JavaScript é a linguagem de programação usada para dar dinamismo e inteligência aos sites."
+      },
+      "Gírias": {
+        "o que é kumbu": "Kumbu é dinheiro!",
+        "o que é kota": "Kota é uma pessoa mais velha, respeitada ou com mais experiência."
+      }
     };
 
-    // Carrega a memória personalizada gravada no telemóvel
-    let memoriaAprendida = JSON.parse(localStorage.getItem('ia_memoria_local')) || {};
+    let nomeUsuario = localStorage.getItem('ia_nome_usuario') || "";
+    let aguardandoNome = false;
 
     atualizarContadorMemoria();
+    iniciarBoasVindas();
 
-    function salvarMemoria() {
-      localStorage.setItem('ia_memoria_local', JSON.stringify(memoriaAprendida));
+    function checarEnter(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        processarMensagem();
+      }
+    }
+
+    function iniciarBoasVindas() {
+      if (!nomeUsuario) {
+        aguardandoNome = true;
+        adicionarMsgIA("Olá! Sou a tua IA com sistema de bibliotecas inteligentes. Para começarmos, como gostaria que eu te chamasse?");
+      } else {
+        adicionarMsgIA(`Olá, ${nomeUsuario}! Em que posso te ajudar hoje? Podes me fazer perguntas ou colar uma lista inteira de conhecimentos!`);
+      }
+    }
+
+    function salvarBibliotecas() {
+      localStorage.setItem('ia_bibliotecas', JSON.stringify(bibliotecas));
       atualizarContadorMemoria();
     }
 
     function atualizarContadorMemoria() {
-      const total = Object.keys(memoriaAprendida).length;
-      infoMemoria.innerText = `Palavras/Frases aprendidas salvas: ${total}`;
+      let totalItens = 0;
+      let totalCategorias = Object.keys(bibliotecas).length;
+      for (let cat in bibliotecas) {
+        totalItens += Object.keys(bibliotecas[cat]).length;
+      }
+      infoMemoria.innerText = `Bibliotecas ativas: ${totalCategorias} | Total de itens aprendidos: ${totalItens}`;
     }
 
     function normalizarTexto(texto) {
       return texto.toLowerCase().trim().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
     }
 
+    function categorizarAutomatico(pergunta) {
+      const p = pergunta.toLowerCase();
+      if (p.includes("kumbu") || p.includes("kota") || p.includes("mboa") || p.includes("camba") || p.includes("bisno")) return "Gírias";
+      if (p.includes("html") || p.includes("javascript") || p.includes("css") || p.includes("código") || p.includes("ia")) return "Tecnologia";
+      if (p.includes("angola") || p.includes("luanda") || p.includes("província") || p.includes("rio") || p.includes("capital")) return "Geografia e História";
+      return "Conhecimento Geral";
+    }
+
+    function adicionarMsgUser(msg) {
+      chatBox.innerHTML += `<div class="msg-user"><b>Tu:</b> ${msg.replace(/\n/g, '<br>')}</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function adicionarMsgIA(msg) {
+      chatBox.innerHTML += `<div class="msg-ia"><b>IA:</b> ${msg}</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function adicionarMsgSistema(msg) {
+      chatBox.innerHTML += `<div class="msg-sistema">${msg}</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
     function processarMensagem() {
       const textoOriginal = userInput.value.trim();
       if (!textoOriginal) return;
 
-      chatBox.innerHTML += `<div class="msg-user"><b>Tu:</b> ${textoOriginal}</div>`;
+      adicionarMsgUser(textoOriginal);
       userInput.value = '';
-      chatBox.scrollTop = chatBox.scrollHeight;
-
       orb.className = 'status-orb pensando';
 
-      // COMANDO DE APRENDIZAGEM DIRETA: "ensinar pergunta = resposta"
-      if (textoOriginal.toLowerCase().startsWith("ensinar ")) {
-        const comando = textoOriginal.substring(8);
-        const partes = comando.split("=");
+      // CAPTURA DO NOME DO UTILIZADOR
+      if (aguardandoNome) {
+        nomeUsuario = textoOriginal;
+        localStorage.setItem('ia_nome_usuario', nomeUsuario);
+        aguardandoNome = false;
+        setTimeout(() => {
+          adicionarMsgIA(`Perfeito, ${nomeUsuario}! Registei o teu nome. Agora podes conversar comigo ou colar várias frases para eu aprender de uma vez!`);
+          orb.className = 'status-orb falando';
+        }, 400);
+        return;
+      }
 
-        if (partes.length === 2) {
-          const perguntaParaAprender = normalizarTexto(partes[0]);
-          const respostaParaAprender = partes[1].trim();
+      const chaveBusca = normalizarTexto(textoOriginal);
 
-          memoriaAprendida[perguntaParaAprender] = respostaParaAprender;
-          salvarMemoria();
+      // RESPOSTAS VARIADAS AO NOME DO UTILIZADOR
+      if (nomeUsuario && chaveBusca.includes(normalizarTexto(nomeUsuario))) {
+        const respostasVariadas = [
+          `Olá, ${nomeUsuario}! No que posso ajudar?`,
+          `Diz lá, ${nomeUsuario}! Estou a ouvir.`,
+          `Presente, ${nomeUsuario}! Qual é o mambo de hoje?`,
+          `Fala comigo, ${nomeUsuario}! Pronta para processar novas informações.`
+        ];
+        const respostaSorteada = respostasVariadas[Math.floor(Math.random() * respostasVariadas.length)];
+        setTimeout(() => {
+          adicionarMsgIA(respostaSorteada);
+          orb.className = 'status-orb falando';
+        }, 400);
+        return;
+      }
 
+      // APRENDIZADO EM MASSA OU FRASE ÚNICA
+      if (textoOriginal.toLowerCase().includes("ensinar ") || textoOriginal.includes("=")) {
+        let linhas = textoOriginal.split(/\n|;/); // Divide por quebra de linha ou ponto e vírgula
+        let aprendidos = 0;
+
+        linhas.forEach(linha => {
+          let posEnsinar = linha.toLowerCase().indexOf("ensinar ");
+          let textoTratado = posEnsinar !== -1 ? linha.substring(posEnsinar + 8) : linha;
+          let partes = textoTratado.split("=");
+
+          if (partes.length === 2) {
+            let pergunta = normalizarTexto(partes[0]);
+            let resposta = partes[1].trim();
+            let categoria = categorizarAutomatico(pergunta);
+
+            if (!bibliotecas[categoria]) bibliotecas[categoria] = {};
+            bibliotecas[categoria][pergunta] = resposta;
+            aprendidos++;
+          }
+        });
+
+        if (aprendidos > 0) {
+          salvarBibliotecas();
           setTimeout(() => {
-            chatBox.innerHTML += `<div class="msg-sistema"><b>IA (Aprendido!):</b> Aprendi! Sempre que perguntares "${partes[0].trim()}", eu vou responder isso.</div>`;
+            adicionarMsgSistema(`<b>IA (Aprendizado Concluído):</b> Processei e aprendi ${aprendidos} item(ns) novo(s) e organizei-os nas bibliotecas correspondentes!`);
             orb.className = 'status-orb falando';
-            falarTexto("Entendido! Aprendi essa palavra nova.");
-            chatBox.scrollTop = chatBox.scrollHeight;
-          }, 400);
+          }, 500);
           return;
         }
       }
 
-      // BUSCA NA MEMÓRIA
-      const chaveBusca = normalizarTexto(textoOriginal);
-
+      // BUSCA OTIMIZADA POR BIBLIOTECAS E PALAVRAS-CHAVE
       setTimeout(() => {
-        let respostaEncontrada = null;
+        let resultado = buscarNasBibliotecas(chaveBusca);
 
-        // 1. Procura na memória aprendida pelo utilizador
-        if (memoriaAprendida[chaveBusca]) {
-          respostaEncontrada = memoriaAprendida[chaveBusca];
-        } 
-        // 2. Busca parcial na memória aprendida
-        else {
-          for (let chave in memoriaAprendida) {
-            if (chaveBusca.includes(chave) || chave.includes(chaveBusca)) {
-              respostaEncontrada = memoriaAprendida[chave];
-              break;
-            }
-          }
-        }
-
-        // 3. Procura no conhecimento base
-        if (!respostaEncontrada) {
-          if (conhecimentoBase[chaveBusca]) {
-            respostaEncontrada = conhecimentoBase[chaveBusca];
-          } else {
-            for (let chave in conhecimentoBase) {
-              if (chaveBusca.includes(chave)) {
-                respostaEncontrada = conhecimentoBase[chave];
-                break;
-              }
-            }
-          }
-        }
-
-        // 4. Se não souber a resposta, solicita aprendizagem ao utilizador
-        if (respostaEncontrada) {
-          chatBox.innerHTML += `<div class="msg-ia"><b>IA:</b> ${respostaEncontrada}</div>`;
+        if (resultado) {
+          adicionarMsgIA(resultado);
           orb.className = 'status-orb falando';
-          falarTexto(respostaEncontrada);
         } else {
-          const avisoSemConhecimento = `Ainda não sei responder a isso, Chefão. Podes me ensinar digitando: ensinar ${textoOriginal} = [a tua resposta aqui]`;
-          chatBox.innerHTML += `<div class="msg-sistema"><b>IA:</b> ${avisoSemConhecimento}</div>`;
+          const aviso = `Ainda não tenho essa informação registrada nas minhas bibliotecas, ${nomeUsuario}. Podes colar a resposta usando: ensinar [pergunta] = [resposta]`;
+          adicionarMsgSistema(aviso);
           orb.className = 'status-orb aprendendo';
         }
-
-        chatBox.scrollTop = chatBox.scrollHeight;
       }, 500);
     }
 
-    function falarTexto(texto) {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utt = new SpeechSynthesisUtterance(texto);
-        utt.lang = 'pt-PT';
-        utt.onend = () => { orb.className = 'status-orb'; };
-        window.speechSynthesis.speak(utt);
-      } else {
-        setTimeout(() => { orb.className = 'status-orb'; }, 1500);
+    function buscarNasBibliotecas(textoUsuario) {
+      const palavrasUsuario = textoUsuario.split(" ").filter(p => p.length > 2);
+      let melhorResposta = null;
+      let maiorPontuacao = 0;
+
+      // Percorre as bibliotecas organizadas
+      for (let categoria in bibliotecas) {
+        let banco = bibliotecas[categoria];
+
+        for (let perguntaSalva in banco) {
+          let pontuacao = 0;
+
+          // Se a busca for exata
+          if (textoUsuario === perguntaSalva) return banco[perguntaSalva];
+
+          // Busca contextual por palavras
+          palavrasUsuario.forEach(palavra => {
+            if (perguntaSalva.includes(palavra)) {
+              pontuacao += 2;
+            }
+          });
+
+          if (pontuacao > maiorPontuacao && pontuacao >= 2) {
+            maiorPontuacao = pontuacao;
+            melhorResposta = banco[perguntaSalva];
+          }
+        }
       }
+
+      return melhorResposta;
     }
   </script>
 </body>
-  </html>
-      
+</html>
