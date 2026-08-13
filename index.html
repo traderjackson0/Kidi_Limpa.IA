@@ -2,22 +2,20 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NYORE.IA - Painel de Controlo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NYORE.IA</title>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg-primary: #0a0d14;
-            --bg-secondary: #121824;
-            --bg-card: #1a2234;
+            --bg-primary: #090c10;
+            --bg-secondary: #131924;
+            --bg-card: #1c2536;
             --accent-blue: #0088ff;
             --accent-cyan: #00d2ff;
-            --accent-green: #00e676;
             --text-main: #f0f4f8;
             --text-muted: #8a99ad;
             --border-color: #243047;
-            --sidebar-width: 260px;
         }
 
         * {
@@ -25,66 +23,120 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        body {
+        html, body {
+            width: 100%;
+            height: 100%;
+            height: 100dvh; /* Preenche 100% da tela real no Android/Kodular */
             background-color: var(--bg-primary);
             color: var(--text-main);
-            height: 100vh;
-            display: flex;
             overflow: hidden;
         }
 
-        /* --- ESTRUTURA PRINCIPAL (SIDEBAR + CONTEÚDO) --- */
+        /* CONTAINER PRINCIPAL RESPONSIVO */
         #app-container {
             display: flex;
+            flex-direction: column;
             width: 100%;
-            height: 100vh;
+            height: 100%;
+            position: relative;
         }
 
+        /* HEADERESTILO GEMINI */
+        header {
+            height: 56px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+        }
+
+        .brand-title {
+            color: var(--accent-cyan);
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* MENU LATERAL DESLIZANTE (DRAWER) */
         sidebar {
-            width: var(--sidebar-width);
+            position: absolute;
+            top: 0;
+            left: -280px; /* Escondido por padrão */
+            width: 280px;
+            height: 100%;
             background: var(--bg-secondary);
             border-right: 1px solid var(--border-color);
+            z-index: 100;
             display: flex;
             flex-direction: column;
             padding: 16px;
             gap: 16px;
+            transition: left 0.3s ease-in-out;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.5);
         }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--accent-cyan);
-            font-size: 1.2rem;
-            font-weight: bold;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border-color);
+        sidebar.open {
+            left: 0; /* Desliza para fora ao clicar nos 3 pontinhos */
+        }
+
+        .overlay-menu {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 90;
+            display: none;
+        }
+
+        .overlay-menu.active {
+            display: block;
         }
 
         .nav-menu {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
         }
 
         .nav-btn {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px 14px;
+            padding: 12px;
             background: transparent;
             border: none;
             color: var(--text-muted);
             border-radius: 8px;
-            cursor: pointer;
             font-size: 0.95rem;
-            transition: 0.2s;
+            cursor: pointer;
             text-align: left;
         }
 
-        .nav-btn:hover, .nav-btn.active {
+        .nav-btn.active, .nav-btn:hover {
             background: var(--bg-card);
             color: var(--accent-cyan);
         }
@@ -95,7 +147,6 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            margin-top: 10px;
         }
 
         .history-title {
@@ -103,79 +154,58 @@
             text-transform: uppercase;
             color: var(--text-muted);
             letter-spacing: 1px;
-            margin-bottom: 4px;
         }
 
         .history-item {
-            padding: 8px 10px;
+            padding: 10px;
             border-radius: 6px;
             font-size: 0.85rem;
             color: var(--text-main);
             background: var(--bg-primary);
-            cursor: pointer;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            border: 1px solid transparent;
+            border: 1px solid var(--border-color);
         }
 
-        .history-item:hover { border-color: var(--border-color); }
-
-        .btn-clear {
-            margin-top: auto;
-            background: rgba(0, 136, 255, 0.1);
-            color: var(--accent-blue);
-            border: 1px solid rgba(0, 136, 255, 0.2);
-        }
-
-        .btn-clear:hover {
-            background: rgba(0, 136, 255, 0.2);
-        }
-
-        /* --- ÁREA PRINCIPAL --- */
+        /* ÁREA DE CONTEÚDO E VIEWS */
         main {
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: var(--bg-primary);
+            height: calc(100% - 56px);
             position: relative;
-        }
-
-        header {
-            height: 60px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 24px;
-            background: var(--bg-secondary);
         }
 
         .view-panel {
             display: none;
             flex: 1;
-            height: calc(100vh - 60px);
+            height: 100%;
             overflow: hidden;
         }
 
-        .view-panel.active { display: flex; flex-direction: column; }
+        .view-panel.active {
+            display: flex;
+            flex-direction: column;
+        }
 
-        /* --- VIEW: CHAT --- */
+        /* VIEW: CHAT GEMINI STYLE */
         #chat-container {
             flex: 1;
             overflow-y: auto;
-            padding: 24px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
         }
 
         .msg {
-            max-width: 75%;
-            padding: 14px 18px;
-            border-radius: 12px;
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 14px;
             font-size: 0.95rem;
-            line-height: 1.5;
+            line-height: 1.4;
+            word-wrap: break-word;
         }
 
         .user-msg {
@@ -193,91 +223,109 @@
             border-bottom-left-radius: 2px;
         }
 
+        /* BARRA DE ENTRADA FIXA EM BAIXO */
         .input-bar {
-            padding: 16px 24px;
+            padding: 10px 12px;
             background: var(--bg-secondary);
             border-top: 1px solid var(--border-color);
             display: flex;
-            gap: 12px;
+            gap: 8px;
+            align-items: center;
         }
 
         .input-bar input {
             flex: 1;
             background: var(--bg-primary);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px 16px;
+            border-radius: 20px;
+            padding: 10px 16px;
             color: white;
             outline: none;
+            font-size: 0.95rem;
         }
 
         .input-bar button {
-            padding: 0 20px;
+            padding: 10px 16px;
             background: var(--accent-blue);
             border: none;
-            border-radius: 8px;
+            border-radius: 20px;
             color: white;
             font-weight: bold;
             cursor: pointer;
         }
 
-        /* --- VIEW: CALCULADORA --- */
+        /* VIEW: CALCULADORA */
         .calc-wrapper {
             margin: auto;
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
-            padding: 20px;
+            padding: 16px;
             border-radius: 16px;
-            width: 300px;
+            width: 90%;
+            max-width: 320px;
         }
 
         .calc-display {
             width: 100%;
-            height: 50px;
+            height: 48px;
             background: var(--bg-primary);
             border: 1px solid var(--border-color);
             border-radius: 8px;
             color: var(--accent-cyan);
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             text-align: right;
-            padding: 10px;
-            margin-bottom: 16px;
+            padding: 8px;
+            margin-bottom: 12px;
             outline: none;
         }
 
         .calc-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            gap: 8px;
         }
 
         .calc-btn {
-            padding: 15px;
+            padding: 14px;
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             color: white;
             border-radius: 8px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
         }
 
-        .calc-btn:hover { background: var(--border-color); }
         .calc-btn.op { color: var(--accent-cyan); }
     </style>
 </head>
 <body>
 
-    <!-- PAINEL PRINCIPAL -->
     <div id="app-container">
-        <!-- SIDEBAR -->
-        <sidebar>
-            <div class="brand">
-                <i data-lucide="bot"></i> NYORE.IA
+        <!-- SOMBRA DO MENU -->
+        <div id="overlayMenu" class="overlay-menu" onclick="toggleMenu()"></div>
+
+        <!-- HEADER DA APP -->
+        <header>
+            <div class="header-left">
+                <button class="menu-btn" onclick="toggleMenu()">
+                    <i data-lucide="menu"></i>
+                </button>
+                <div class="brand-title">
+                    <i data-lucide="bot"></i> NYORE.IA
+                </div>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--accent-cyan);">● Ativa</div>
+        </header>
+
+        <!-- MENU LATERAL (OCULTO/SLIDE) -->
+        <sidebar id="sideMenu">
+            <div class="brand-title" style="padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">
+                <i data-lucide="bot"></i> Painel Nyore
             </div>
 
             <div class="nav-menu">
                 <button class="nav-btn active" onclick="mudarAba('chat', this)">
-                    <i data-lucide="message-square"></i> Conversa Principal
+                    <i data-lucide="message-square"></i> Chat Principal
                 </button>
                 <button class="nav-btn" onclick="mudarAba('calc', this)">
                     <i data-lucide="calculator"></i> Calculadora
@@ -285,31 +333,22 @@
             </div>
 
             <div class="history-section">
-                <div class="history-title">Histórico de Sessões</div>
+                <div class="history-title">Histórico Recente</div>
                 <div id="history-list"></div>
             </div>
 
-            <button class="nav-btn btn-clear" onclick="novaConversa()">
+            <button class="nav-btn" style="color: var(--accent-blue);" onclick="novaConversa()">
                 <i data-lucide="plus-circle"></i> Nova Conversa
             </button>
         </sidebar>
 
-        <!-- MAIN CONTENT -->
+        <!-- ÁREA PRINCIPAL -->
         <main>
-            <header>
-                <div id="header-status" style="color: var(--accent-cyan); font-weight: bold;">
-                    ● Sistema Operacional
-                </div>
-                <div id="user-display" style="font-size: 0.9rem; color: var(--text-muted);">
-                    Modo Direto Ativo
-                </div>
-            </header>
-
-            <!-- VIEW: CHAT -->
+            <!-- CHAT VIEW -->
             <div id="view-chat" class="view-panel active">
                 <div id="chat-container">
                     <div class="msg bot-msg">
-                        Sistemas operacionais, Chefão! Acesso livre e direto ativado. Em que vamos trabalhar hoje?
+                        Sistemas operacionais, Chefão! Cérebro ajustado e sem erros. O que queres ensinar ou consultar hoje?
                     </div>
                 </div>
                 <div class="input-bar">
@@ -318,7 +357,7 @@
                 </div>
             </div>
 
-            <!-- VIEW: CALCULADORA -->
+            <!-- CALCULADORA VIEW -->
             <div id="view-calc" class="view-panel">
                 <div class="calc-wrapper">
                     <input type="text" id="calcDisplay" class="calc-display" readonly>
@@ -347,95 +386,85 @@
 
     <script>
         /* =========================================================
-           1. CÉREBRO HUMANIZADO, MEMÓRIA & INTERVENÇÃO INTEGRAIS
+           CÉREBRO REPARADO DA NYORE.IA (MEMÓRIA x CONSULTA x ENSINO)
            ========================================================= */
         class CerebroNyore {
             constructor() {
-                this.prefixoMemoria = "nyore_brain_";
-                this.prefixoBibliotecas = "nyore_lib_";
+                this.prefixoMemoria = "nyore_knowledge_";
             }
 
-            guardar(chave, valor) {
-                localStorage.setItem(this.prefixoMemoria + chave.toLowerCase(), JSON.stringify(valor));
+            // Normaliza o texto para busca sem erros
+            limparTexto(str) {
+                return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
             }
 
-            buscar(chave) {
-                const dado = localStorage.getItem(this.prefixoMemoria + chave.toLowerCase());
-                return dado ? JSON.parse(dado) : null;
+            // Ação de Guardar Conhecimento
+            aprenderConhecimento(topico, conteudo) {
+                const chave = this.limparTexto(topico);
+                localStorage.setItem(this.prefixoMemoria + chave, conteudo);
+                return `Anotado, Chefão! Guardei na minha memória tudo sobre **${topico.toUpperCase()}**.`;
             }
 
-            obterSaudacaoHorario() {
-                const hora = new Date().getHours();
-                if (hora >= 5 && hora < 12) return "Bom dia";
-                if (hora >= 12 && hora < 18) return "Boa tarde";
-                return "Boa noite";
+            // Ação de Buscar Conhecimento
+            buscarConhecimento(topico) {
+                const chave = this.limparTexto(topico);
+                return localStorage.getItem(this.prefixoMemoria + chave);
             }
 
-            sortear(lista) {
-                return lista[Math.floor(Math.random() * lista.length)];
-            }
-
-            deveIntervir(texto) {
-                const t = texto.toLowerCase().trim();
-                const gatilhos = ["nyore", "ia", "bot", "chefão", "assistente"];
-                const eMencionada = gatilhos.some(g => t.includes(g));
-                const ePergunta = t.endsWith("?") || ["como", "o que", "explica", "ajuda"].some(p => t.includes(p));
-                return eMencionada || ePergunta;
-            }
-
-            aprenderTextoLivre(texto) {
-                const libs = ["sqlite3", "kivy", "requests", "csharp", "python", "javascript", "sqlserver"];
-                let encontradas = [];
-                const t = texto.toLowerCase();
-
-                libs.forEach(lib => {
-                    if (t.includes(lib)) {
-                        this.salvarBiblioteca(lib, texto);
-                        encontradas.push(lib.toUpperCase());
-                    }
-                });
-
-                if (encontradas.length > 0) {
-                    return `Conhecimento absorvido sobre: **${encontradas.join(", ")}**!`;
-                }
-                this.guardar("aprendizado_" + Date.now(), texto);
-                return "Informação capturada na memória!";
-            }
-
-            salvarBiblioteca(lib, conteudo) {
-                const chave = this.prefixoBibliotecas + lib;
-                let dados = JSON.parse(localStorage.getItem(chave)) || [];
-                dados.push({ conteudo, data: new Date().toLocaleDateString("pt-PT") });
-                localStorage.setItem(chave, JSON.stringify(dados));
-            }
-
+            // Processador Inteligente
             processar(texto) {
-                if (!texto.trim()) return null;
+                if (!texto || !texto.trim()) return null;
 
-                if (!this.deveIntervir(texto)) {
-                    this.aprenderTextoLivre(texto);
-                    return null; // Silêncio se não for chamada
+                const raw = texto.trim();
+                const t = this.limparTexto(raw);
+
+                // === 1. MODO ENSINO / APRENDIZAGEM ===
+                if (t.includes("aprende") || t.includes("guarda isto") || t.includes("aprende isto")) {
+                    // Extrai o que está depois dos dois pontos ou da instrução
+                    let partes = raw.split(":");
+                    if (partes.length > 1) {
+                        let topico = partes[0].replace(/(nyore|aprende|isto|que)/gi, "").trim();
+                        let conteudo = partes.slice(1).join(":").trim();
+                        return this.aprenderConhecimento(topico || "geral", conteudo);
+                    }
+                    
+                    // Se enviou em formato direto com aspas ou texto corrido
+                    if (t.includes("angola")) {
+                        return this.aprenderConhecimento("angola", raw);
+                    }
+
+                    return "Recebido! Se quiseres ensinar um tópico específico, podes usar: **Nyore, aprende que [Tópico]: [Explicação]**.";
                 }
 
-                const t = texto.toLowerCase();
-                const nome = this.buscar("nome_usuario") || "Chefão";
-                const saudacao = this.obterSaudacaoHorario();
+                // === 2. MODO CONSULTA / PERGUNTAS ===
+                if (t.includes("oque e") || t.includes("oq e") || t.includes("quem e") || t.includes("explica")) {
+                    // Tenta identificar o assunto perguntado
+                    let topico = t.replace(/(nyore|oque e|oq e|quem e|explica|\?)/g, "").trim();
+                    let memória = this.buscarConhecimento(topico);
 
-                if (t.includes("meu nome é") || t.includes("sou o")) {
-                    const extraido = t.replace(/(meu nome é|sou o)/g, "").trim();
-                    this.guardar("nome_usuario", extraido);
-                    return `Entendido! Registo atualizado, Chefão ${extraido}.`;
+                    if (memória) {
+                        return `📚 **Memória sobre ${topico.toUpperCase()}:**\n${memória}`;
+                    } else {
+                        return `Ainda não tenho o conceito de **${topico}** guardado na minha base, Chefão. Podes ensinar-me escrevendo: *"Nyore, aprende que ${topico}: [explicação]"*!`;
+                    }
+                }
+
+                // === 3. SAUDAÇÕES E CONVERSA CORRENTE ===
+                if (["ola", "oi", "viva", "nyore", "tudo bem"].some(g => t.includes(g))) {
+                    return "Sistemas operacionais, Chefão! Em que posso ajudar a avançar agora?";
                 }
 
                 if (t.includes("obrigado") || t.includes("valeu")) {
-                    return this.sortear([
-                        `Tamo junto, ${nome}!`,
-                        `Sempre às ordens, Chefão!`,
-                        `Sem problemas! Conta comigo.`
-                    ]);
+                    return "Tamo junto, Chefão! Sempre às ordens.";
                 }
 
-                return `${saudacao}, ${nome}! Processando a tua solicitação. Como posso ajudar a avançar?`;
+                // Se perguntou algo genérico que não é saudação nem ensino
+                let tentativaBusca = this.buscarConhecimento(t);
+                if (tentativaBusca) {
+                    return tentativaBusca;
+                }
+
+                return "Compreendido! Estou pronto para processar. Se quiseres que eu guarde este assunto na memória, avisa-me!";
             }
         }
 
@@ -446,11 +475,30 @@
         };
 
         /* =========================================================
-           2. GESTÃO DE CHAT E HISTÓRICO DE SESSÕES
+           GERENCIADOR DE MENU E LAYOUT
            ========================================================= */
-        let historicoSessoes = JSON.parse(localStorage.getItem("nyore_historico")) || [];
+        function toggleMenu() {
+            const sidebar = document.getElementById("sideMenu");
+            const overlay = document.getElementById("overlayMenu");
+            sidebar.classList.toggle("open");
+            overlay.classList.toggle("active");
+        }
 
-        function adicionarMensagemChat(autor, texto) {
+        function mudarAba(aba, btn) {
+            document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(`view-${aba}`).classList.add('active');
+            btn.classList.add('active');
+            toggleMenu(); // Fecha o menu ao escolher a aba
+        }
+
+        /* =========================================================
+           SISTEMA DE CHAT E HISTÓRICO
+           ========================================================= */
+        let historico = JSON.parse(localStorage.getItem("nyore_hist")) || [];
+
+        function adicionarMensagem(autor, texto) {
             const container = document.getElementById("chat-container");
             const div = document.createElement("div");
             div.classList.add("msg", autor === "Tu" ? "user-msg" : "bot-msg");
@@ -464,18 +512,19 @@
             const texto = input.value;
             if (!texto.trim()) return;
 
-            adicionarMensagemChat("Tu", texto);
+            adicionarMensagem("Tu", texto);
             input.value = "";
 
-            if (historicoSessoes.length === 0 || historicoSessoes[0].titulo !== texto.substring(0, 20)) {
-                historicoSessoes.unshift({ titulo: texto.substring(0, 22) + "...", data: new Date().toLocaleTimeString() });
-                localStorage.setItem("nyore_historico", JSON.stringify(historicoSessoes));
-                atualizarListaHistorico();
+            // Atualiza histórico
+            if (historico.length === 0 || historico[0] !== texto.substring(0, 20)) {
+                historico.unshift(texto.substring(0, 22) + "...");
+                localStorage.setItem("nyore_hist", JSON.stringify(historico));
+                renderHistorico();
             }
 
             const resposta = cerebro.processar(texto);
             if (resposta) {
-                setTimeout(() => adicionarMensagemChat("Nyore", resposta), 400);
+                setTimeout(() => adicionarMensagem("Nyore", resposta), 300);
             }
         }
 
@@ -483,53 +532,37 @@
             if (e.key === 'Enter') enviar();
         }
 
-        function atualizarListaHistorico() {
+        function renderHistorico() {
             const list = document.getElementById("history-list");
             list.innerHTML = "";
-            historicoSessoes.forEach(item => {
+            historico.forEach(item => {
                 const div = document.createElement("div");
                 div.className = "history-item";
-                div.innerText = item.titulo;
+                div.innerText = item;
                 list.appendChild(div);
             });
         }
-        atualizarListaHistorico();
+        renderHistorico();
 
         function novaConversa() {
             document.getElementById("chat-container").innerHTML = `
                 <div class="msg bot-msg">
-                    Nova sessão iniciada, Chefão! Em que posso ajudar agora?
+                    Nova sessão aberta, Chefão! Cérebro pronto.
                 </div>
             `;
+            toggleMenu();
         }
 
         /* =========================================================
-           3. NAVEGAÇÃO E FERRAMENTAS (CALCULADORA)
+           CALCULADORA
            ========================================================= */
-        function mudarAba(aba, btn) {
-            document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            
-            document.getElementById(`view-${aba}`).classList.add('active');
-            btn.classList.add('active');
-        }
-
-        function calcAppend(val) {
-            document.getElementById('calcDisplay').value += val;
-        }
-
-        function calcClear() {
-            document.getElementById('calcDisplay').value = '';
-        }
-
+        function calcAppend(v) { document.getElementById('calcDisplay').value += v; }
+        function calcClear() { document.getElementById('calcDisplay').value = ''; }
         function calcEval() {
-            try {
-                document.getElementById('calcDisplay').value = eval(document.getElementById('calcDisplay').value);
-            } catch {
-                document.getElementById('calcDisplay').value = 'Erro';
-            }
+            try { document.getElementById('calcDisplay').value = eval(document.getElementById('calcDisplay').value); }
+            catch { document.getElementById('calcDisplay').value = 'Erro'; }
         }
     </script>
 </body>
-                    </html>
-                
+                            </html>
+                            
