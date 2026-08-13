@@ -1,524 +1,604 @@
 <!DOCTYPE html>
-<html lang="pt-AO">
+<html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nyore.IA — Assistente Angolana Inteligente</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg-deep: #120E23;
-      --surface: #1B1636;
-      --surface-2: #241D45;
-      --lavender: #F3F0FF;
-      --violet: #7C6CF6;
-      --violet-soft: #5A4FD9;
-      --amber: #FFB13C;
-      --coral: #FF5D8F;
-      --emerald: #2ECC71;
-      --cyan: #3498DB;
-      --muted: #9C95C4;
-      --ink: #12102A;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYORE.IA - Painel de Controlo</title>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-primary: #0a0d14;
+            --bg-secondary: #121824;
+            --bg-card: #1a2234;
+            --accent-blue: #0088ff;
+            --accent-cyan: #00d2ff;
+            --accent-green: #00e676;
+            --text-main: #f0f4f8;
+            --text-muted: #8a99ad;
+            --border-color: #243047;
+            --sidebar-width: 260px;
+        }
 
-      --display: 'Sora', sans-serif;
-      --body: 'Inter', sans-serif;
-      --mono: 'JetBrains Mono', monospace;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
 
-    body {
-      background:
-        radial-gradient(circle at 15% 0%, #221c42 0%, transparent 55%),
-        radial-gradient(circle at 95% 100%, #1a1638 0%, transparent 50%),
-        var(--bg-deep);
-      min-height: 100vh;
-      font-family: var(--body);
-      padding: 24px 12px;
-      color: var(--lavender);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+        /* --- TELA DE LOGIN / AUTENTICAÇÃO --- */
+        #auth-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-primary);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-    .board {
-      width: 100%;
-      max-width: 420px;
-      display: flex;
-      justify-content: center;
-    }
+        .auth-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
 
-    .phone {
-      width: 100%;
-      height: 810px;
-      background: linear-gradient(180deg, #1a1638, #120e23);
-      border-radius: 40px;
-      border: 8px solid #08061a;
-      box-shadow:
-        0 30px 70px -18px rgba(0,0,0,.8),
-        0 0 0 1px rgba(124,108,246,.2);
-      overflow: hidden;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-    }
+        .auth-title {
+            color: var(--accent-cyan);
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
 
-    .notch {
-      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-      width: 120px; height: 22px;
-      background: #08061a;
-      border-radius: 0 0 16px 16px;
-      z-index: 50;
-    }
+        .auth-subtitle {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            margin-bottom: 24px;
+        }
 
-    .statusbar {
-      height: 40px;
-      display: flex; align-items: flex-end; justify-content: space-between;
-      padding: 0 22px 6px;
-      font-family: var(--mono); font-size: 11px; color: var(--lavender);
-      flex-shrink: 0;
-      z-index: 10;
-    }
+        .pin-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
 
-    .home-top {
-      padding: 6px 22px 0;
-      flex-shrink: 0;
-    }
-    .home-top .hello {
-      font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
-      color: var(--muted); margin-bottom: 2px;
-    }
-    .home-top h2 {
-      font-family: var(--display); font-weight: 600; font-size: 18px; color: var(--lavender);
-    }
+        .pin-digit {
+            width: 48px;
+            height: 56px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--accent-cyan);
+            font-size: 1.5rem;
+            text-align: center;
+            font-weight: bold;
+            outline: none;
+        }
 
-    /* Estágio do Orbe Dinâmico */
-    .orb-stage {
-      height: 170px;
-      display: flex; align-items: center; justify-content: center;
-      position: relative;
-      flex-shrink: 0;
-    }
-    .orb {
-      width: 110px; height: 110px; border-radius: 50%;
-      background: radial-gradient(circle at 35% 30%, #a89bff, var(--violet) 55%, var(--violet-soft) 100%);
-      box-shadow: 0 0 50px 8px rgba(124,108,246,.4);
-      position: relative;
-      transition: all 0.5s ease;
-      animation: breathe 3.4s ease-in-out infinite;
-      cursor: pointer;
-    }
-    .orb::after {
-      content: '';
-      position: absolute; inset: 12px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 40% 35%, rgba(255,255,255,.5), transparent 60%);
-    }
+        .pin-digit:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 8px rgba(0, 136, 255, 0.4);
+        }
 
-    .orb.pesquisando {
-      background: radial-gradient(circle at 35% 30%, #74b9ff, var(--cyan) 55%, #0984e3 100%);
-      box-shadow: 0 0 60px 12px rgba(52, 152, 219, 0.6);
-      animation: pulseFast 1.2s ease-in-out infinite;
-    }
-    .orb.falando {
-      background: radial-gradient(circle at 35% 30%, #55efc4, var(--emerald) 55%, #00b894 100%);
-      box-shadow: 0 0 60px 12px rgba(46, 204, 113, 0.6);
-    }
-    .orb.aprendendo {
-      background: radial-gradient(circle at 35% 30%, #ffeaa7, var(--amber) 55%, #e67e22 100%);
-      box-shadow: 0 0 60px 12px rgba(255, 177, 60, 0.6);
-    }
-    .orb.inativo {
-      background: radial-gradient(circle at 35% 30%, #636e72, #2d3436 100%);
-      box-shadow: none;
-      animation: none;
-    }
+        .btn-auth {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent-blue), #0055ff);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
 
-    @keyframes breathe { 0%,100%{ transform: scale(1); } 50%{ transform: scale(1.05); } }
-    @keyframes pulseFast { 0%,100%{ transform: scale(0.98); } 50%{ transform: scale(1.08); } }
+        .btn-auth:hover { opacity: 0.9; }
 
-    .ring { position: absolute; border-radius: 50%; border: 1px solid rgba(124,108,246,.25); }
-    .ring.r1 { width: 140px; height: 140px; }
-    .ring.r2 { width: 180px; height: 180px; border-color: rgba(124,108,246,.14); }
+        /* --- ESTRUTURA PRINCIPAL (SIDEBAR + CONTEÚDO) --- */
+        #app-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
 
-    .orb-caption {
-      position: absolute; bottom: 0px; left: 0; right: 0;
-      text-align: center;
-    }
-    .orb-caption .state { font-family: var(--display); font-weight: 600; font-size: 13px; color: var(--lavender); }
-    .orb-caption .hint { font-family: var(--mono); font-size: 9.5px; color: var(--muted); }
+        sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            gap: 16px;
+        }
 
-    /* PILULA DE ESCUTA */
-    .mic-pill {
-      margin: 8px 16px;
-      display: flex; align-items: center; gap: 10px;
-      background: rgba(124,108,246,.12);
-      border: 1px solid rgba(124,108,246,.3);
-      border-radius: 14px;
-      padding: 8px 12px;
-      flex-shrink: 0;
-    }
-    .mic-pill .icon {
-      width: 28px; height: 28px; border-radius: 8px;
-      background: var(--violet);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--ink); flex-shrink: 0;
-    }
-    .mic-pill .t small {
-      display: block; font-family: var(--mono); font-size: 8.5px; color: var(--violet);
-      text-transform: uppercase; letter-spacing: .06em;
-    }
-    .mic-pill .t span { font-size: 11px; font-weight: 600; color: var(--lavender); }
-    .switch {
-      margin-left: auto; width: 36px; height: 20px; border-radius: 10px;
-      background: var(--violet); position: relative; cursor: pointer; transition: background 0.3s;
-    }
-    .switch::after {
-      content: ''; position: absolute; top: 2px; right: 2px;
-      width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 0.3s;
-    }
-    .switch.desligado { background: #485460; }
-    .switch.desligado::after { transform: translateX(-16px); }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent-cyan);
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
 
-    /* BOTÕES DE ATALHO */
-    .home-shortcuts {
-      display: flex; justify-content: center; gap: 12px;
-      padding: 4px 16px 8px;
-      flex-shrink: 0;
-    }
-    .shortcut {
-      width: 44px; height: 44px; border-radius: 14px;
-      background: rgba(243,240,255,.06);
-      border: 1px solid rgba(243,240,255,.1);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--lavender); cursor: pointer; transition: all 0.2s;
-    }
-    .shortcut:hover { background: var(--violet); color: var(--ink); transform: translateY(-2px); }
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
 
-    /* CAIXA DE CHAT */
-    .chat-box {
-      flex: 1;
-      background: rgba(11, 9, 22, 0.6);
-      border-top: 1px solid rgba(243,240,255,.08);
-      border-bottom: 1px solid rgba(243,240,255,.08);
-      padding: 10px 14px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      font-size: 11.5px;
-      line-height: 1.4;
-    }
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: 0.2s;
+            text-align: left;
+        }
 
-    .msg { padding: 8px 11px; border-radius: 12px; max-width: 90%; word-wrap: break-word; }
-    .msg-user { align-self: flex-end; background: var(--surface-2); border: 1px solid rgba(124,108,246,.3); color: var(--lavender); }
-    .msg-ia { align-self: flex-start; background: var(--surface); border: 1px solid rgba(243,240,255,.1); color: var(--lavender); }
-    .msg-sistema { align-self: center; background: rgba(255,177,60,.1); border: 1px solid rgba(255,177,60,.2); color: var(--amber); font-family: var(--mono); font-size: 9.5px; text-align: center; }
+        .nav-btn:hover, .nav-btn.active {
+            background: var(--bg-card);
+            color: var(--accent-cyan);
+        }
 
-    /* ENTRADA DE TEXTO E BOTÃO ENVIAR */
-    .input-section {
-      padding: 8px 12px;
-      background: var(--surface);
-      display: flex; gap: 8px; align-items: center; flex-shrink: 0;
-    }
-    .input-section textarea {
-      flex: 1; background: rgba(18, 14, 35, 0.8);
-      border: 1px solid rgba(124,108,246,.3); border-radius: 10px;
-      padding: 8px 10px; color: #fff; font-family: var(--body); font-size: 11.5px;
-      outline: none; resize: none; height: 38px;
-    }
-    .btn-send {
-      width: 38px; height: 38px; background: var(--violet); border: none;
-      border-radius: 10px; color: var(--ink); display: flex; align-items: center;
-      justify-content: center; cursor: pointer; flex-shrink: 0;
-      transition: background 0.2s;
-    }
-    .btn-send:active {
-      transform: scale(0.95);
-    }
+        .history-section {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
 
-    .mem-footer {
-      padding: 6px 14px 10px; background: var(--bg-deep);
-      font-family: var(--mono); font-size: 8.5px; color: var(--muted);
-      display: flex; justify-content: space-between; flex-shrink: 0;
-    }
-  </style>
+        .history-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .history-item {
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            background: var(--bg-primary);
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border: 1px solid transparent;
+        }
+
+        .history-item:hover { border-color: var(--border-color); }
+
+        .btn-logout {
+            margin-top: auto;
+            background: rgba(255, 65, 108, 0.1);
+            color: #ff416c;
+            border: 1px solid rgba(255, 65, 108, 0.2);
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 65, 108, 0.2);
+            color: #ff416c;
+        }
+
+        /* --- ÁREA PRINCIPAL --- */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+            position: relative;
+        }
+
+        header {
+            height: 60px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            background: var(--bg-secondary);
+        }
+
+        .view-panel {
+            display: none;
+            flex: 1;
+            height: calc(100vh - 60px);
+            overflow: hidden;
+        }
+
+        .view-panel.active { display: flex; flex-direction: column; }
+
+        /* --- VIEW: CHAT --- */
+        #chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .msg {
+            max-width: 75%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .user-msg {
+            align-self: flex-end;
+            background: var(--accent-blue);
+            color: #fff;
+            border-bottom-right-radius: 2px;
+        }
+
+        .bot-msg {
+            align-self: flex-start;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-bottom-left-radius: 2px;
+        }
+
+        .input-bar {
+            padding: 16px 24px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 12px;
+        }
+
+        .input-bar input {
+            flex: 1;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: white;
+            outline: none;
+        }
+
+        .input-bar button {
+            padding: 0 20px;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* --- VIEW: CALCULADORA --- */
+        .calc-wrapper {
+            margin: auto;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 16px;
+            width: 300px;
+        }
+
+        .calc-display {
+            width: 100%;
+            height: 50px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--accent-cyan);
+            font-size: 1.5rem;
+            text-align: right;
+            padding: 10px;
+            margin-bottom: 16px;
+            outline: none;
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .calc-btn {
+            padding: 15px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: white;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        .calc-btn:hover { background: var(--border-color); }
+        .calc-btn.op { color: var(--accent-cyan); }
+    </style>
 </head>
 <body>
 
-<div class="board">
-  <div class="phone">
-    <div class="notch"></div>
-    <div class="statusbar">
-      <span id="relogio">00:00</span>
-      <span>NYORE.IA</span>
-      <span>100%</span>
+    <!-- OVERLAY DE AUTENTICAÇÃO -->
+    <div id="auth-overlay">
+        <div class="auth-card">
+            <div class="auth-title">
+                <i data-lucide="shield-lock"></i>
+                NYORE.IA
+            </div>
+            <div id="auth-subtitle" class="auth-subtitle">Define um PIN de 4 dígitos para registar</div>
+            
+            <div class="pin-inputs">
+                <input type="password" maxlength="1" class="pin-digit" autofocus>
+                <input type="password" maxlength="1" class="pin-digit">
+                <input type="password" maxlength="1" class="pin-digit">
+                <input type="password" maxlength="1" class="pin-digit">
+            </div>
+
+            <button class="btn-auth" onclick="autenticar()">ENTRAR</button>
+        </div>
     </div>
 
-    <div class="home-top">
-      <div class="hello" id="saudacao">Boa noite</div>
-      <h2 id="tituloPrincipal">Diz, estou a ouvir.</h2>
+    <!-- PAINEL PRINCIPAL -->
+    <div id="app-container">
+        <!-- SIDEBAR -->
+        <sidebar>
+            <div class="brand">
+                <i data-lucide="bot"></i> NYORE.IA
+            </div>
+
+            <div class="nav-menu">
+                <button class="nav-btn active" onclick="mudarAba('chat', this)">
+                    <i data-lucide="message-square"></i> Conversa Principal
+                </button>
+                <button class="nav-btn" onclick="mudarAba('calc', this)">
+                    <i data-lucide="calculator"></i> Calculadora
+                </button>
+            </div>
+
+            <div class="history-section">
+                <div class="history-title">Histórico de Sessões</div>
+                <div id="history-list"></div>
+            </div>
+
+            <button class="nav-btn btn-logout" onclick="bloquearPainel()">
+                <i data-lucide="lock"></i> Bloquear / Sair
+            </button>
+        </sidebar>
+
+        <!-- MAIN CONTENT -->
+        <main>
+            <header>
+                <div id="header-status" style="color: var(--accent-cyan); font-weight: bold;">
+                    ● Sistema Operacional
+                </div>
+                <div id="user-display" style="font-size: 0.9rem; color: var(--text-muted);">
+                    Sessão Protegida
+                </div>
+            </header>
+
+            <!-- VIEW: CHAT -->
+            <div id="view-chat" class="view-panel active">
+                <div id="chat-container">
+                    <div class="msg bot-msg">
+                        Sistemas operacionais, Chefão! Base de dados e cérebro humanizado prontos. Em que vamos trabalhar hoje?
+                    </div>
+                </div>
+                <div class="input-bar">
+                    <input type="text" id="chatInput" placeholder="Digita a tua mensagem..." onkeypress="handleKey(event)">
+                    <button onclick="enviar()">ENVIAR</button>
+                </div>
+            </div>
+
+            <!-- VIEW: CALCULADORA -->
+            <div id="view-calc" class="view-panel">
+                <div class="calc-wrapper">
+                    <input type="text" id="calcDisplay" class="calc-display" readonly>
+                    <div class="calc-grid">
+                        <button class="calc-btn" onclick="calcClear()">C</button>
+                        <button class="calc-btn op" onclick="calcAppend('/')">/</button>
+                        <button class="calc-btn op" onclick="calcAppend('*')">*</button>
+                        <button class="calc-btn op" onclick="calcAppend('-')">-</button>
+                        <button class="calc-btn" onclick="calcAppend('7')">7</button>
+                        <button class="calc-btn" onclick="calcAppend('8')">8</button>
+                        <button class="calc-btn" onclick="calcAppend('9')">9</button>
+                        <button class="calc-btn op" onclick="calcAppend('+')">+</button>
+                        <button class="calc-btn" onclick="calcAppend('4')">4</button>
+                        <button class="calc-btn" onclick="calcAppend('5')">5</button>
+                        <button class="calc-btn" onclick="calcAppend('6')">6</button>
+                        <button class="calc-btn op" onclick="calcEval()">=</button>
+                        <button class="calc-btn" onclick="calcAppend('1')">1</button>
+                        <button class="calc-btn" onclick="calcAppend('2')">2</button>
+                        <button class="calc-btn" onclick="calcAppend('3')">3</button>
+                        <button class="calc-btn" onclick="calcAppend('0')">0</button>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <!-- Orbe Visual -->
-    <div class="orb-stage">
-      <div class="ring r2"></div>
-      <div class="ring r1"></div>
-      <div class="orb" id="orb" onclick="falarComOrbe()"></div>
-      <div class="orb-caption">
-        <div class="state" id="orbState">Pronta</div>
-        <div class="hint" id="orbHint">toca no orbe ou digita abaixo</div>
-      </div>
-    </div>
+    <script>
+        /* =========================================================
+           1. CÉREBRO HUMANIZADO, MEMÓRIA & INTERVENÇÃO INTEGRAIS
+           ========================================================= */
+        class CerebroNyore {
+            constructor() {
+                this.prefixoMemoria = "nyore_brain_";
+                this.prefixoBibliotecas = "nyore_lib_";
+            }
 
-    <!-- Pílula de Escuta -->
-    <div class="mic-pill">
-      <div class="icon">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 19v3"/></svg>
-      </div>
-      <div class="t">
-        <small id="statusEscutaRotulo">Escuta Contínua</small>
-        <span id="statusEscutaTexto">Ativa — Nyore pronta para responder</span>
-      </div>
-      <div class="switch" id="switchMic" onclick="alternarEscuta()"></div>
-    </div>
+            guardar(chave, valor) {
+                localStorage.setItem(this.prefixoMemoria + chave.toLowerCase(), JSON.stringify(valor));
+            }
 
-    <!-- ATALHOS FUNCIONAIS -->
-    <div class="home-shortcuts">
-      <div class="shortcut" onclick="acaoHistorico()" title="Histórico da Sessão">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
-      </div>
-      <div class="shortcut" onclick="acaoVerBibliotecas()" title="Biblioteca de Conhecimento">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
-      </div>
-      <div class="shortcut" onclick="acaoLembretes()" title="Lembretes">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-      </div>
-      <div class="shortcut" onclick="acaoPesquisaDireta()" title="Pesquisar na Web">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
-      </div>
-    </div>
+            buscar(chave) {
+                const dado = localStorage.getItem(this.prefixoMemoria + chave.toLowerCase());
+                return dado ? JSON.parse(dado) : null;
+            }
 
-    <!-- Caixa de Chat -->
-    <div class="chat-box" id="chatBox"></div>
+            obterSaudacaoHorario() {
+                const hora = new Date().getHours();
+                if (hora >= 5 && hora < 12) return "Bom dia";
+                if (hora >= 12 && hora < 18) return "Boa tarde";
+                return "Boa noite";
+            }
 
-    <!-- Entrada de Texto com ID explícito no botão -->
-    <div class="input-section">
-      <textarea id="userInput" placeholder="Pergunta algo ou ensina com: ensinar [x] = [y]" onkeydown="checarEnter(event)"></textarea>
-      <button class="btn-send" id="btnEnviarMsg" type="button">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-      </button>
-    </div>
+            sortear(lista) {
+                return lista[Math.floor(Math.random() * lista.length)];
+            }
 
-    <div class="mem-footer">
-      <span id="infoCategorias">Categorias: 0</span>
-      <span id="infoItens">Itens Aprendidos: 0</span>
-    </div>
-  </div>
-</div>
+            deveIntervir(texto) {
+                const t = texto.toLowerCase().trim();
+                const gatilhos = ["nyore", "ia", "bot", "chefão", "assistente"];
+                const eMencionada = gatilhos.some(g => t.includes(g));
+                const ePergunta = t.endsWith("?") || ["como", "o que", "explica", "ajuda"].some(p => t.includes(p));
+                return eMencionada || ePergunta;
+            }
 
-<script>
-  // ELEMENTOS DA INTERFACE
-  const orb = document.getElementById('orb');
-  const orbState = document.getElementById('orbState');
-  const orbHint = document.getElementById('orbHint');
-  const chatBox = document.getElementById('chatBox');
-  const userInput = document.getElementById('userInput');
-  const btnEnviarMsg = document.getElementById('btnEnviarMsg');
-  const saudacao = document.getElementById('saudacao');
-  const relogio = document.getElementById('relogio');
-  const infoCategorias = document.getElementById('infoCategorias');
-  const infoItens = document.getElementById('infoItens');
-  const switchMic = document.getElementById('switchMic');
-  const statusEscutaTexto = document.getElementById('statusEscutaTexto');
+            aprenderTextoLivre(texto) {
+                const libs = ["sqlite3", "kivy", "requests", "csharp", "python", "javascript", "sqlserver"];
+                let encontradas = [];
+                const t = texto.toLowerCase();
 
-  let escutaAtiva = true;
+                libs.forEach(lib => {
+                    if (t.includes(lib)) {
+                        this.salvarBiblioteca(lib, texto);
+                        encontradas.push(lib.toUpperCase());
+                    }
+                });
 
-  // BASE DE DADOS LOCAL E CATEGORIAS
-  let bibliotecas = JSON.parse(localStorage.getItem('nyore_bibliotecas')) || {
-    "Gerais": {
-      "olá": "Olá! Como posso ajudar nos teus estudos e tarefas hoje?",
-      "quem és tu": "Sou a Nyore.IA, a tua assistente virtual angolana para aprendizagem, organização e pesquisas.",
-      "tudo bem": "Tudo ótimo por aqui! Pronta para trabalhar."
-    },
-    "Informática de Gestão": {
-      "o que é sistema de informação": "É um conjunto organizado de elementos (pessoas, dados, processos e tecnologia) que recolhe, processa, armazena e distribui informação para apoiar a tomada de decisões.",
-      "o que é banco de dados": "É uma coleção organizada de dados estruturados, armazenados eletronicamente, permitindo acesso e consulta rápida.",
-      "o que é erp": "ERP (Enterprise Resource Planning) é um software de gestão empresarial que integra todos os departamentos de uma empresa."
-    },
-    "Programação": {
-      "o que é html": "HTML (HyperText Markup Language) é a linguagem de marcação padrão para criar e estruturar páginas na web.",
-      "o que é python": "Python é uma linguagem de programação de alto nível, interpretada, de sintaxe simples e muito utilizada em IA e automação.",
-      "o que é c sharp": "C# é uma linguagem de programação orientada a objetos desenvolvida pela Microsoft, muito usada para software desktop e jogos."
-    },
-    "Redes de Computadores": {
-      "o que é endereço ip": "É um identificador numérico único atribuído a cada dispositivo ligado a uma rede de computadores.",
-      "o que é router": "Um router é um dispositivo de rede que encaminha pacotes de dados entre diferentes redes de computadores."
-    },
-    "História e Geografia de Angola": {
-      "quando foi a independência de angola": "Angola proclamou a sua independência a 11 de Novembro de 1975.",
-      "qual é a capital de angola": "A capital de Angola é Luanda."
-    }
-  };
+                if (encontradas.length > 0) {
+                    return `Conhecimento absorvido sobre: **${encontradas.join(", ")}**!`;
+                }
+                this.guardar("aprendizado_" + Date.now(), texto);
+                return "Informação capturada na memória!";
+            }
 
-  let nomeUsuario = localStorage.getItem('nyore_nome_usuario') || "";
-  let aguardandoNome = false;
+            salvarBiblioteca(lib, conteudo) {
+                const chave = this.prefixoBibliotecas + lib;
+                let dados = JSON.parse(localStorage.getItem(chave)) || [];
+                dados.push({ conteudo, data: new Date().toLocaleDateString("pt-PT") });
+                localStorage.setItem(chave, JSON.stringify(dados));
+            }
 
-  // REGISTO DIRETO DO EVENTO DE CLIQUE DO BOTÃO ENVIAR
-  btnEnviarMsg.addEventListener('click', function(e) {
-    e.preventDefault();
-    processarMensagem();
-  });
+            processar(texto) {
+                if (!texto.trim()) return null;
 
-  // INICIALIZAÇÃO
-  atualizarRelogio();
-  setInterval(atualizarRelogio, 1000);
-  atualizarContadores();
-  iniciarSessao();
+                if (!this.deveIntervir(texto)) {
+                    this.aprenderTextoLivre(texto);
+                    return null; // Silêncio se não for chamada
+                }
 
-  function atualizarRelogio() {
-    const agora = new Date();
-    const h = String(agora.getHours()).padStart(2, '0');
-    const m = String(agora.getMinutes()).padStart(2, '0');
-    relogio.innerText = `${h}:${m}`;
+                const t = texto.toLowerCase();
+                const nome = this.buscar("nome_usuario") || "Chefão";
+                const saudacao = this.obterSaudacaoHorario();
 
-    const hora = agora.getHours();
-    if (hora >= 5 && hora < 12) saudacao.innerText = "Bom dia";
-    else if (hora >= 12 && hora < 18) saudacao.innerText = "Boa tarde";
-    else saudacao.innerText = "Boa noite";
-  }
+                if (t.includes("meu nome é") || t.includes("sou o")) {
+                    const extraido = t.replace(/(meu nome é|sou o)/g, "").trim();
+                    this.guardar("nome_usuario", extraido);
+                    return `Entendido! Registo atualizado, Chefão ${extraido}.`;
+                }
 
-  function iniciarSessao() {
-    if (!nomeUsuario) {
-      aguardandoNome = true;
-      adicionarMsgIA("Olá! Sou a Nyore.IA. Como gostaria que eu te chamasse?");
-    } else {
-      adicionarMsgIA(`Olá, ${nomeUsuario}! Como posso ajudar nos teus estudos hoje?`);
-    }
-  }
+                if (t.includes("obrigado") || t.includes("valeu")) {
+                    return this.sortear([
+                        `Tamo junto, ${nome}!`,
+                        `Sempre às ordens, Chefão!`,
+                        `Sem problemas! Conta comigo.`
+                    ]);
+                }
 
-  function alternarEscuta() {
-    escutaAtiva = !escutaAtiva;
-    if (escutaAtiva) {
-      switchMic.classList.remove('desligado');
-      statusEscutaTexto.innerText = "Ativa — Nyore pronta para responder";
-      definirEstado("Pronta", "falando", "escuta ativa");
-    } else {
-      switchMic.classList.add('desligado');
-      statusEscutaTexto.innerText = "Pausada — Clique para reativar";
-      definirEstado("Pausada", "inativo", "escuta desligada");
-    }
-  }
+                return `${saudacao}, ${nome}! Processando a tua solicitação. Como posso ajudar a avançar?`;
+            }
+        }
 
-  function falarComOrbe() {
-    if (!escutaAtiva) alternarEscuta();
-    adicionarMsgSistema("Sintonia ativada. Podes digitar a tua pergunta abaixo!");
-  }
+        const cerebro = new CerebroNyore();
 
-  function acaoHistorico() {
-    let totalMsgs = chatBox.children.length;
-    adicionarMsgSistema(`<b>Histórico:</b> Esta sessão possui ${totalMsgs} interações registadas.`);
-  }
+        /* =========================================================
+           2. AUTENTICAÇÃO PIN 4 DÍGITOS
+           ========================================================= */
+        const pinInputs = document.querySelectorAll('.pin-digit');
+        
+        pinInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length === 1 && index < pinInputs.length - 1) {
+                    pinInputs[index + 1].focus();
+                }
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    pinInputs[index - 1].focus();
+                }
+            });
+        });
 
-  function acaoVerBibliotecas() {
-    let relatorio = "<b>Bibliotecas Ativas na Memória:</b><br>";
-    for (let cat in bibliotecas) {
-      let qtd = Object.keys(bibliotecas[cat]).length;
-      relatorio += `• <b>${cat}:</b> ${qtd} item(ns)<br>`;
-    }
-    adicionarMsgIA(relatorio);
-  }
+        function verificarPin() {
+            let pin = "";
+            pinInputs.forEach(i => pin += i.value);
+            return pin;
+        }
 
-  function acaoLembretes() {
-    adicionarMsgIA("<b>Lembretes Rápidos:</b><br>1. Rever matérias de prova<br>2. Adicionar novos ensinamentos com '='<br>3. Praticar exercícios de programação");
-  }
+        function autenticar() {
+            const pinDigitado = verificarPin();
+            if (pinDigitado.length !== 4) {
+                alert("Por favor, preenche os 4 dígitos do PIN.");
+                return;
+            }
 
-  function acaoPesquisaDireta() {
-    const texto = userInput.value.trim();
-    if (!texto) {
-      adicionarMsgSistema("Digita o assunto na caixa de texto e clica na Lupa para pesquisar na Web!");
-      return;
-    }
-    processarMensagem(true);
-  }
+            const pinSalvo = localStorage.getItem("nyore_user_pin");
 
-  function checarEnter(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      processarMensagem();
-    }
-  }
+            if (!pinSalvo) {
+                localStorage.setItem("nyore_user_pin", pinDigitado);
+                alert("PIN criado com sucesso!");
+                desbloquearPainel();
+            } else if (pinSalvo === pinDigitado) {
+                desbloquearPainel();
+            } else {
+                alert("PIN Incorreto! Tenta novamente.");
+                pinInputs.forEach(i => i.value = "");
+                pinInputs[0].focus();
+            }
+        }
 
-  function salvarBibliotecas() {
-    localStorage.setItem('nyore_bibliotecas', JSON.stringify(bibliotecas));
-    atualizarContadores();
-  }
+        function desbloquearPainel() {
+            document.getElementById("auth-overlay").style.display = "none";
+        }
 
-  function atualizarContadores() {
-    let totalItens = 0;
-    let totalCategorias = Object.keys(bibliotecas).length;
-    for (let cat in bibliotecas) {
-      totalItens += Object.keys(bibliotecas[cat]).length;
-    }
-    infoCategorias.innerText = `Categorias: ${totalCategorias}`;
-    infoItens.innerText = `Itens Aprendidos: ${totalItens}`;
-  }
+        function bloquearPainel() {
+            pinInputs.forEach(i => i.value = "");
+            document.getElementById("auth-overlay").style.display = "flex";
+            pinInputs[0].focus();
+        }
 
-  function normalizarTexto(texto) {
-    return texto.toLowerCase().trim().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-  }
-
-  function categorizarAutomatico(pergunta) {
-    const p = pergunta.toLowerCase();
-    if (p.includes("html") || p.includes("python") || p.includes("c#") || p.includes("código")) return "Programação";
-    if (p.includes("ip") || p.includes("router") || p.includes("rede")) return "Redes de Computadores";
-    if (p.includes("gestão") || p.includes("dados") || p.includes("erp")) return "Informática de Gestão";
-    if (p.includes("angola") || p.includes("luanda") || p.includes("independência")) return "História e Geografia de Angola";
-    return "Conhecimento Geral";
-  }
-
-  function adicionarMsgUser(msg) {
-    chatBox.innerHTML += `<div class="msg msg-user">${msg.replace(/\n/g, '<br>')}</div>`;
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
-
-  function adicionarMsgIA(msg) {
-    chatBox.innerHTML += `<div class="msg msg-ia">${msg.replace(/\n/g, '<br>')}</div>`;
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
-
-  function adicionarMsgSistema(msg) {
-    chatBox.innerHTML += `<div class="msg msg-sistema">${msg}</div>`;
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
-
-  function definirEstado(estado, orbeClasse, dica) {
-    orbState.innerText = estado;
-    orb.className = `orb ${orbeClasse}`;
-    orbHint.innerText = dica;
-  }
-
-  async function processarMensagem(forcarWeb = false) {
-    const textoOriginal = userInput.value.trim();
-    if (!textoOriginal) return;
-
-    adicionarMsgUser(textoOriginal);
-    userInput.value = '';
-    definirEstado("A processar...", "", "a analisar mensagem");
-
-    if (aguardandoNome) {
-      nomeUsuario = textoOriginal;
-      localStorage.setItem('nyore_nome_usuario', nomeUsuario);
-      aguardandoNome = false;
-      setTimeout(() => {
-        definirEstado("Pronta", "falando", "nome registado");
-        adicionarMsgIA(`Prazer em conhecer-te, ${nomeUsuario}! A tua assistente está pronta.`);
-      }, 400);
-      return;
-    }
-
-    const chaveBusca = normalizarTexto(textoOriginal);
-
-    // MODO ENSINAR
-          
+        // Verifica o PIN ao carregar a página
+        window.onload = () => {
+            lucide.createIcons();
+            const pinSalvo = localStorage.getItem("nyore_user_pin");
+            if (p
