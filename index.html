@@ -29,13 +29,12 @@
         html, body {
             width: 100%;
             height: 100%;
-            height: 100dvh; /* Preenche 100% da tela real no Android/Kodular */
+            height: 100dvh;
             background-color: var(--bg-primary);
             color: var(--text-main);
             overflow: hidden;
         }
 
-        /* CONTAINER PRINCIPAL RESPONSIVO */
         #app-container {
             display: flex;
             flex-direction: column;
@@ -44,7 +43,6 @@
             position: relative;
         }
 
-        /* HEADERESTILO GEMINI */
         header {
             height: 56px;
             background: var(--bg-secondary);
@@ -82,11 +80,10 @@
             gap: 6px;
         }
 
-        /* MENU LATERAL DESLIZANTE (DRAWER) */
         sidebar {
             position: absolute;
             top: 0;
-            left: -280px; /* Escondido por padrão */
+            left: -280px;
             width: 280px;
             height: 100%;
             background: var(--bg-secondary);
@@ -100,9 +97,7 @@
             box-shadow: 5px 0 15px rgba(0,0,0,0.5);
         }
 
-        sidebar.open {
-            left: 0; /* Desliza para fora ao clicar nos 3 pontinhos */
-        }
+        sidebar.open { left: 0; }
 
         .overlay-menu {
             position: absolute;
@@ -112,9 +107,7 @@
             display: none;
         }
 
-        .overlay-menu.active {
-            display: block;
-        }
+        .overlay-menu.active { display: block; }
 
         .nav-menu {
             display: flex;
@@ -168,7 +161,6 @@
             border: 1px solid var(--border-color);
         }
 
-        /* ÁREA DE CONTEÚDO E VIEWS */
         main {
             flex: 1;
             display: flex;
@@ -189,7 +181,6 @@
             flex-direction: column;
         }
 
-        /* VIEW: CHAT GEMINI STYLE */
         #chat-container {
             flex: 1;
             overflow-y: auto;
@@ -223,7 +214,6 @@
             border-bottom-left-radius: 2px;
         }
 
-        /* BARRA DE ENTRADA FIXA EM BAIXO */
         .input-bar {
             padding: 10px 12px;
             background: var(--bg-secondary);
@@ -254,7 +244,6 @@
             cursor: pointer;
         }
 
-        /* VIEW: CALCULADORA */
         .calc-wrapper {
             margin: auto;
             background: var(--bg-secondary);
@@ -301,10 +290,8 @@
 <body>
 
     <div id="app-container">
-        <!-- SOMBRA DO MENU -->
         <div id="overlayMenu" class="overlay-menu" onclick="toggleMenu()"></div>
 
-        <!-- HEADER DA APP -->
         <header>
             <div class="header-left">
                 <button class="menu-btn" onclick="toggleMenu()">
@@ -317,7 +304,6 @@
             <div style="font-size: 0.8rem; color: var(--accent-cyan);">● Ativa</div>
         </header>
 
-        <!-- MENU LATERAL (OCULTO/SLIDE) -->
         <sidebar id="sideMenu">
             <div class="brand-title" style="padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">
                 <i data-lucide="bot"></i> Painel Nyore
@@ -342,13 +328,11 @@
             </button>
         </sidebar>
 
-        <!-- ÁREA PRINCIPAL -->
         <main>
-            <!-- CHAT VIEW -->
             <div id="view-chat" class="view-panel active">
                 <div id="chat-container">
                     <div class="msg bot-msg">
-                        Sistemas operacionais, Chefão! Cérebro ajustado e sem erros. O que queres ensinar ou consultar hoje?
+                        Sistemas operacionais, Chefão! Mente atualizada e sem bugs. Podes ensinar-me conceitos ou mapear respostas diretas!
                     </div>
                 </div>
                 <div class="input-bar">
@@ -357,7 +341,6 @@
                 </div>
             </div>
 
-            <!-- CALCULADORA VIEW -->
             <div id="view-calc" class="view-panel">
                 <div class="calc-wrapper">
                     <input type="text" id="calcDisplay" class="calc-display" readonly>
@@ -386,71 +369,121 @@
 
     <script>
         /* =========================================================
-           CÉREBRO REPARADO DA NYORE.IA (MEMÓRIA x CONSULTA x ENSINO)
+           CÉREBRO REPARADO & UNIFICADO DA NYORE.IA
            ========================================================= */
         class CerebroNyore {
             constructor() {
-                this.prefixoMemoria = "nyore_knowledge_";
+                this.prefixoTopico = "nyore_topico_";
+                this.prefixoPerguntDirect = "nyore_qa_";
             }
 
-            // Normaliza o texto para busca sem erros
-            limparTexto(str) {
-                return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+            // Normalização inteligente: Remove aspas, pontuações estranhas e acentos
+            limpar(str) {
+                if (!str) return "";
+                return str.toLowerCase()
+                          .normalize("NFD")
+                          .replace(/[\u0300-\u036f]/g, "")
+                          .replace(/["'*`*_]/g, "")
+                          .trim();
             }
 
-            // Ação de Guardar Conhecimento
-            aprenderConhecimento(topico, conteudo) {
-                const chave = this.limparTexto(topico);
-                localStorage.setItem(this.prefixoMemoria + chave, conteudo);
-                return `Anotado, Chefão! Guardei na minha memória tudo sobre **${topico.toUpperCase()}**.`;
+            // 1. Guardar Tópico Geral
+            salvarTopico(topico, conteudo) {
+                const chave = this.limpar(topico);
+                if (!chave) return "Não consegui entender o tópico, Chefão.";
+                localStorage.setItem(this.prefixoTopico + chave, conteudo);
+                return `Entendido, Chefão! Guardei na memória tudo sobre **${topico.toUpperCase().trim()}**.`;
             }
 
-            // Ação de Buscar Conhecimento
-            buscarConhecimento(topico) {
-                const chave = this.limparTexto(topico);
-                return localStorage.getItem(this.prefixoMemoria + chave);
+            // 2. NOVO MÉTODO: Mapear Pergunta para Resposta Direta
+            salvarPerguntaResposta(pergunta, resposta) {
+                const chave = this.limpar(pergunta);
+                if (!chave) return "Não entendi a pergunta, Chefão.";
+                localStorage.setItem(this.prefixoPerguntDirect + chave, resposta);
+                return `Mapeamento concluído, Chefão! Quando me perguntares *"${pergunta.trim()}"*, vou responder exatamente: **"${resposta.trim()}"**.`;
             }
 
-            // Processador Inteligente
-            processar(texto) {
-                if (!texto || !texto.trim()) return null;
+            // Buscar Tópico
+            buscarTopico(termo) {
+                const chave = this.limpar(termo);
+                return localStorage.getItem(this.prefixoTopico + chave);
+            }
 
-                const raw = texto.trim();
-                const t = this.limparTexto(raw);
+            // Buscar Pergunta Direta
+            buscarPerguntaDireta(pergunta) {
+                const chave = this.limpar(pergunta);
+                return localStorage.getItem(this.prefixoPerguntDirect + chave);
+            }
 
-                // === 1. MODO ENSINO / APRENDIZAGEM ===
+            // Processador Principal da IA
+            processar(textoOriginal) {
+                if (!textoOriginal || !textoOriginal.trim()) return null;
+
+                const raw = textoOriginal.trim();
+                const t = this.limpar(raw);
+
+                // --- A. NOVO MÉTODO DE ENSINO: "Quando eu perguntar [P], responde [R]" ---
+                if (t.includes("quando eu perguntar") || t.includes("se eu perguntar")) {
+                    let partes = raw.split(/responde|responda/i);
+                    if (partes.length >= 2) {
+                        let pergunta = partes[0].replace(/(nyore|quando eu perguntar|se eu perguntar|que|para)/gi, "").replace(/["',]/g, "").trim();
+                        let resposta = partes.slice(1).join("responde").replace(/["']/g, "").trim();
+                        return this.salvarPerguntaResposta(pergunta, resposta);
+                    }
+                }
+
+                // --- B. MÉTODO ANTIGO DE ENSINO: "Nyore, aprende que [Tópico]: [Conteúdo]" ---
                 if (t.includes("aprende") || t.includes("guarda isto") || t.includes("aprende isto")) {
-                    // Extrai o que está depois dos dois pontos ou da instrução
                     let partes = raw.split(":");
-                    if (partes.length > 1) {
-                        let topico = partes[0].replace(/(nyore|aprende|isto|que)/gi, "").trim();
+                    if (partes.length >= 2) {
+                        let topico = partes[0].replace(/(nyore|aprende|isto|que|aprenda)/gi, "").trim();
                         let conteudo = partes.slice(1).join(":").trim();
-                        return this.aprenderConhecimento(topico || "geral", conteudo);
-                    }
-                    
-                    // Se enviou em formato direto com aspas ou texto corrido
-                    if (t.includes("angola")) {
-                        return this.aprenderConhecimento("angola", raw);
-                    }
-
-                    return "Recebido! Se quiseres ensinar um tópico específico, podes usar: **Nyore, aprende que [Tópico]: [Explicação]**.";
-                }
-
-                // === 2. MODO CONSULTA / PERGUNTAS ===
-                if (t.includes("oque e") || t.includes("oq e") || t.includes("quem e") || t.includes("explica")) {
-                    // Tenta identificar o assunto perguntado
-                    let topico = t.replace(/(nyore|oque e|oq e|quem e|explica|\?)/g, "").trim();
-                    let memória = this.buscarConhecimento(topico);
-
-                    if (memória) {
-                        return `📚 **Memória sobre ${topico.toUpperCase()}:**\n${memória}`;
+                        return this.salvarTopico(topico, conteudo);
                     } else {
-                        return `Ainda não tenho o conceito de **${topico}** guardado na minha base, Chefão. Podes ensinar-me escrevendo: *"Nyore, aprende que ${topico}: [explicação]"*!`;
+                        // Se colou frase corrida sem dois pontos (ex: "Nyore aprende que Angola é um país...")
+                        let extraido = raw.replace(/(nyore|aprende|isto|que|aprenda)/gi, "").trim();
+                        let palavras = extraido.split(" ");
+                        let topico = palavras[0]; // Primeira palavra vira a chave
+                        return this.salvarTopico(topico, extraido);
                     }
                 }
 
-                // === 3. SAUDAÇÕES E CONVERSA CORRENTE ===
-                if (["ola", "oi", "viva", "nyore", "tudo bem"].some(g => t.includes(g))) {
+                // --- C. CONSULTA MÁXIMA (Respostas Mapeadas & Perguntas Naturais) ---
+
+                // 1. Tenta resposta direta configurada pelo usuário
+                let respostaMapeada = this.buscarPerguntaDireta(t);
+                if (respostaMapeada) return respostaMapeada;
+
+                // 2. Extrai termos de perguntas comuns
+                const padroesPerguntas = [
+                    "oque e", "oq e", "o que e", "quem e", "quais sao", 
+                    "como sao", "quando", "fala sobre", "me diz sobre", "explica sobre", "explica"
+                ];
+
+                let termoExtraido = t;
+                padroesPerguntas.forEach(p => {
+                    if (termoExtraido.startsWith(p)) {
+                        termoExtraido = termoExtraido.replace(p, "").trim();
+                    }
+                });
+
+                // Se tinha ponto de interrogação ou palavra-chave de busca
+                termoExtraido = termoExtraido.replace(/(nyore|\?)/g, "").trim();
+
+                // Busca o tópico limpo
+                let resultadoMemoria = this.buscarTopico(termoExtraido);
+                if (resultadoMemoria) {
+                    return `📚 **Memória sobre ${termoExtraido.toUpperCase()}:**\n${resultadoMemoria}`;
+                }
+
+                // Se buscou apenas o termo solto (ex: "Angola")
+                let buscaDiretaApenasTermo = this.buscarTopico(t.replace("nyore", "").trim());
+                if (buscaDiretaApenasTermo) {
+                    return `📚 **Memória sobre ${t.toUpperCase().replace("NYORE", "").trim()}:**\n${buscaDiretaApenasTermo}`;
+                }
+
+                // --- D. SAUDAÇÕES E DIÁLOGOS ---
+                if (["ola", "oi", "viva", "tudo bem", "boas"].some(g => t.includes(g))) {
                     return "Sistemas operacionais, Chefão! Em que posso ajudar a avançar agora?";
                 }
 
@@ -458,44 +491,32 @@
                     return "Tamo junto, Chefão! Sempre às ordens.";
                 }
 
-                // Se perguntou algo genérico que não é saudação nem ensino
-                let tentativaBusca = this.buscarConhecimento(t);
-                if (tentativaBusca) {
-                    return tentativaBusca;
+                // Fallback amigável de tópico não encontrado
+                if (padroesPerguntas.some(p => t.includes(p)) || t.endsWith("?")) {
+                    return `Ainda não tenho essa informação sobre **${termoExtraido || raw}** na minha base, Chefão. Podes ensinar-me dizendo: *"Nyore, aprende que ${termoExtraido || 'tópico'}: [explicação]"* ou *"Quando eu perguntar ${raw}, responde [sua resposta]"*!`;
                 }
 
-                return "Compreendido! Estou pronto para processar. Se quiseres que eu guarde este assunto na memória, avisa-me!";
+                return "Compreendido, Chefão! Acompanhando a conversa. Caso queiras que eu guarde algo, é só avisar!";
             }
         }
 
         const cerebro = new CerebroNyore();
 
-        window.onload = () => {
-            lucide.createIcons();
-        };
+        window.onload = () => { lucide.createIcons(); };
 
-        /* =========================================================
-           GERENCIADOR DE MENU E LAYOUT
-           ========================================================= */
         function toggleMenu() {
-            const sidebar = document.getElementById("sideMenu");
-            const overlay = document.getElementById("overlayMenu");
-            sidebar.classList.toggle("open");
-            overlay.classList.toggle("active");
+            document.getElementById("sideMenu").classList.toggle("open");
+            document.getElementById("overlayMenu").classList.toggle("active");
         }
 
         function mudarAba(aba, btn) {
             document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            
             document.getElementById(`view-${aba}`).classList.add('active');
             btn.classList.add('active');
-            toggleMenu(); // Fecha o menu ao escolher a aba
+            toggleMenu();
         }
 
-        /* =========================================================
-           SISTEMA DE CHAT E HISTÓRICO
-           ========================================================= */
         let historico = JSON.parse(localStorage.getItem("nyore_hist")) || [];
 
         function adicionarMensagem(autor, texto) {
@@ -515,7 +536,6 @@
             adicionarMensagem("Tu", texto);
             input.value = "";
 
-            // Atualiza histórico
             if (historico.length === 0 || historico[0] !== texto.substring(0, 20)) {
                 historico.unshift(texto.substring(0, 22) + "...");
                 localStorage.setItem("nyore_hist", JSON.stringify(historico));
@@ -524,45 +544,8 @@
 
             const resposta = cerebro.processar(texto);
             if (resposta) {
-                setTimeout(() => adicionarMensagem("Nyore", resposta), 300);
+                setTimeout(() => adicionarMensagem("Nyore", resposta), 250);
             }
         }
 
-        function handleKey(e) {
-            if (e.key === 'Enter') enviar();
-        }
-
-        function renderHistorico() {
-            const list = document.getElementById("history-list");
-            list.innerHTML = "";
-            historico.forEach(item => {
-                const div = document.createElement("div");
-                div.className = "history-item";
-                div.innerText = item;
-                list.appendChild(div);
-            });
-        }
-        renderHistorico();
-
-        function novaConversa() {
-            document.getElementById("chat-container").innerHTML = `
-                <div class="msg bot-msg">
-                    Nova sessão aberta, Chefão! Cérebro pronto.
-                </div>
-            `;
-            toggleMenu();
-        }
-
-        /* =========================================================
-           CALCULADORA
-           ========================================================= */
-        function calcAppend(v) { document.getElementById('calcDisplay').value += v; }
-        function calcClear() { document.getElementById('calcDisplay').value = ''; }
-        function calcEval() {
-            try { document.getElementById('calcDisplay').value = eval(document.getElementById('calcDisplay').value); }
-            catch { document.getElementById('calcDisplay').value = 'Erro'; }
-        }
-    </script>
-</body>
-                            </html>
-                            
+        function handleK
