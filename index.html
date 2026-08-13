@@ -35,85 +35,6 @@
             overflow: hidden;
         }
 
-        /* --- TELA DE LOGIN / AUTENTICAÇÃO --- */
-        #auth-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--bg-primary);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .auth-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 30px;
-            width: 100%;
-            max-width: 380px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .auth-title {
-            color: var(--accent-cyan);
-            font-size: 1.5rem;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .auth-subtitle {
-            color: var(--text-muted);
-            font-size: 0.88rem;
-            margin-bottom: 24px;
-        }
-
-        .pin-inputs {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .pin-digit {
-            width: 48px;
-            height: 56px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-primary);
-            color: var(--accent-cyan);
-            font-size: 1.5rem;
-            text-align: center;
-            font-weight: bold;
-            outline: none;
-        }
-
-        .pin-digit:focus {
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 8px rgba(0, 136, 255, 0.4);
-        }
-
-        .btn-auth {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, var(--accent-blue), #0055ff);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-auth:hover { opacity: 0.9; }
-
         /* --- ESTRUTURA PRINCIPAL (SIDEBAR + CONTEÚDO) --- */
         #app-container {
             display: flex;
@@ -200,16 +121,15 @@
 
         .history-item:hover { border-color: var(--border-color); }
 
-        .btn-logout {
+        .btn-clear {
             margin-top: auto;
-            background: rgba(255, 65, 108, 0.1);
-            color: #ff416c;
-            border: 1px solid rgba(255, 65, 108, 0.2);
+            background: rgba(0, 136, 255, 0.1);
+            color: var(--accent-blue);
+            border: 1px solid rgba(0, 136, 255, 0.2);
         }
 
-        .btn-logout:hover {
-            background: rgba(255, 65, 108, 0.2);
-            color: #ff416c;
+        .btn-clear:hover {
+            background: rgba(0, 136, 255, 0.2);
         }
 
         /* --- ÁREA PRINCIPAL --- */
@@ -347,26 +267,6 @@
 </head>
 <body>
 
-    <!-- OVERLAY DE AUTENTICAÇÃO -->
-    <div id="auth-overlay">
-        <div class="auth-card">
-            <div class="auth-title">
-                <i data-lucide="shield-lock"></i>
-                NYORE.IA
-            </div>
-            <div id="auth-subtitle" class="auth-subtitle">Define um PIN de 4 dígitos para registar</div>
-            
-            <div class="pin-inputs">
-                <input type="password" maxlength="1" class="pin-digit" autofocus>
-                <input type="password" maxlength="1" class="pin-digit">
-                <input type="password" maxlength="1" class="pin-digit">
-                <input type="password" maxlength="1" class="pin-digit">
-            </div>
-
-            <button class="btn-auth" onclick="autenticar()">ENTRAR</button>
-        </div>
-    </div>
-
     <!-- PAINEL PRINCIPAL -->
     <div id="app-container">
         <!-- SIDEBAR -->
@@ -389,8 +289,8 @@
                 <div id="history-list"></div>
             </div>
 
-            <button class="nav-btn btn-logout" onclick="bloquearPainel()">
-                <i data-lucide="lock"></i> Bloquear / Sair
+            <button class="nav-btn btn-clear" onclick="novaConversa()">
+                <i data-lucide="plus-circle"></i> Nova Conversa
             </button>
         </sidebar>
 
@@ -401,7 +301,7 @@
                     ● Sistema Operacional
                 </div>
                 <div id="user-display" style="font-size: 0.9rem; color: var(--text-muted);">
-                    Sessão Protegida
+                    Modo Direto Ativo
                 </div>
             </header>
 
@@ -409,7 +309,7 @@
             <div id="view-chat" class="view-panel active">
                 <div id="chat-container">
                     <div class="msg bot-msg">
-                        Sistemas operacionais, Chefão! Base de dados e cérebro humanizado prontos. Em que vamos trabalhar hoje?
+                        Sistemas operacionais, Chefão! Acesso livre e direto ativado. Em que vamos trabalhar hoje?
                     </div>
                 </div>
                 <div class="input-bar">
@@ -541,64 +441,95 @@
 
         const cerebro = new CerebroNyore();
 
-        /* =========================================================
-           2. AUTENTICAÇÃO PIN 4 DÍGITOS
-           ========================================================= */
-        const pinInputs = document.querySelectorAll('.pin-digit');
-        
-        pinInputs.forEach((input, index) => {
-            input.addEventListener('input', (e) => {
-                if (e.target.value.length === 1 && index < pinInputs.length - 1) {
-                    pinInputs[index + 1].focus();
-                }
-            });
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Backspace' && !e.target.value && index > 0) {
-                    pinInputs[index - 1].focus();
-                }
-            });
-        });
-
-        function verificarPin() {
-            let pin = "";
-            pinInputs.forEach(i => pin += i.value);
-            return pin;
-        }
-
-        function autenticar() {
-            const pinDigitado = verificarPin();
-            if (pinDigitado.length !== 4) {
-                alert("Por favor, preenche os 4 dígitos do PIN.");
-                return;
-            }
-
-            const pinSalvo = localStorage.getItem("nyore_user_pin");
-
-            if (!pinSalvo) {
-                localStorage.setItem("nyore_user_pin", pinDigitado);
-                alert("PIN criado com sucesso!");
-                desbloquearPainel();
-            } else if (pinSalvo === pinDigitado) {
-                desbloquearPainel();
-            } else {
-                alert("PIN Incorreto! Tenta novamente.");
-                pinInputs.forEach(i => i.value = "");
-                pinInputs[0].focus();
-            }
-        }
-
-        function desbloquearPainel() {
-            document.getElementById("auth-overlay").style.display = "none";
-        }
-
-        function bloquearPainel() {
-            pinInputs.forEach(i => i.value = "");
-            document.getElementById("auth-overlay").style.display = "flex";
-            pinInputs[0].focus();
-        }
-
-        // Verifica o PIN ao carregar a página
         window.onload = () => {
             lucide.createIcons();
-            const pinSalvo = localStorage.getItem("nyore_user_pin");
-            if (p
+        };
+
+        /* =========================================================
+           2. GESTÃO DE CHAT E HISTÓRICO DE SESSÕES
+           ========================================================= */
+        let historicoSessoes = JSON.parse(localStorage.getItem("nyore_historico")) || [];
+
+        function adicionarMensagemChat(autor, texto) {
+            const container = document.getElementById("chat-container");
+            const div = document.createElement("div");
+            div.classList.add("msg", autor === "Tu" ? "user-msg" : "bot-msg");
+            div.innerText = texto;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function enviar() {
+            const input = document.getElementById("chatInput");
+            const texto = input.value;
+            if (!texto.trim()) return;
+
+            adicionarMensagemChat("Tu", texto);
+            input.value = "";
+
+            if (historicoSessoes.length === 0 || historicoSessoes[0].titulo !== texto.substring(0, 20)) {
+                historicoSessoes.unshift({ titulo: texto.substring(0, 22) + "...", data: new Date().toLocaleTimeString() });
+                localStorage.setItem("nyore_historico", JSON.stringify(historicoSessoes));
+                atualizarListaHistorico();
+            }
+
+            const resposta = cerebro.processar(texto);
+            if (resposta) {
+                setTimeout(() => adicionarMensagemChat("Nyore", resposta), 400);
+            }
+        }
+
+        function handleKey(e) {
+            if (e.key === 'Enter') enviar();
+        }
+
+        function atualizarListaHistorico() {
+            const list = document.getElementById("history-list");
+            list.innerHTML = "";
+            historicoSessoes.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "history-item";
+                div.innerText = item.titulo;
+                list.appendChild(div);
+            });
+        }
+        atualizarListaHistorico();
+
+        function novaConversa() {
+            document.getElementById("chat-container").innerHTML = `
+                <div class="msg bot-msg">
+                    Nova sessão iniciada, Chefão! Em que posso ajudar agora?
+                </div>
+            `;
+        }
+
+        /* =========================================================
+           3. NAVEGAÇÃO E FERRAMENTAS (CALCULADORA)
+           ========================================================= */
+        function mudarAba(aba, btn) {
+            document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(`view-${aba}`).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        function calcAppend(val) {
+            document.getElementById('calcDisplay').value += val;
+        }
+
+        function calcClear() {
+            document.getElementById('calcDisplay').value = '';
+        }
+
+        function calcEval() {
+            try {
+                document.getElementById('calcDisplay').value = eval(document.getElementById('calcDisplay').value);
+            } catch {
+                document.getElementById('calcDisplay').value = 'Erro';
+            }
+        }
+    </script>
+</body>
+                    </html>
+                
