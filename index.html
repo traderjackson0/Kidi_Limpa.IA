@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IA Local com Aprendizagem</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      background-color: #0f0f17;
+      color: #cdd6f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 15px;
+    }
+
+    .widget-flutuante {
+      width: 100%;
+      max-width: 380px;
+      background: #1a1a26;
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid #2e2e42;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+
+    .status-orb {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #7289da 0%, #1a1a26 70%);
+      margin-bottom: 15px;
+      box-shadow: 0 0 20px #7289da;
+      transition: all 0.3s ease;
+    }
+
+    .status-orb.pensando { background: radial-gradient(circle, #f1c40f 0%, #1a1a26 70%); box-shadow: 0 0 25px #f1c40f; }
+    .status-orb.aprendendo { background: radial-gradient(circle, #e67e22 0%, #1a1a26 70%); box-shadow: 0 0 25px #e67e22; }
+    .status-orb.falando { background: radial-gradient(circle, #2ecc71 0%, #1a1a26 70%); box-shadow: 0 0 30px #2ecc71; }
+
+    .chat-box {
+      width: 100%;
+      background: #111118;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 120px;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+      font-size: 0.9em;
+      line-height: 1.4;
+    }
+
+    .msg-user { color: #7289da; margin-bottom: 6px; font-weight: bold; }
+    .msg-ia { color: #2ecc71; margin-bottom: 6px; }
+    .msg-sistema { color: #e67e22; margin-bottom: 6px; font-style: italic; }
+
+    .input-group { width: 100%; display: flex; gap: 8px; margin-bottom: 10px; }
+
+    input[type="text"] {
+      flex: 1;
+      background: #252538;
+      border: 1px solid #444;
+      border-radius: 10px;
+      padding: 10px;
+      color: #fff;
+      font-size: 0.9em;
+      outline: none;
+    }
+
+    .btn {
+      background: #7289da;
+      color: #fff;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .info-memoria {
+      font-size: 0.75em;
+      color: #888;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="widget-flutuante">
+    <div id="orb" class="status-orb"></div>
+    
+    <div class="chat-box" id="chatBox">
+      <div class="msg-ia"><b>IA:</b> Olá, Chefão! Estou pronta. O meu cérebro aprende contigo em tempo real!</div>
+    </div>
+
+    <div class="input-group">
+      <input type="text" id="userInput" placeholder="Escreve uma pergunta ou instrução..." onkeypress="if(event.key==='Enter') processarMensagem()">
+      <button class="btn" onclick="processarMensagem()">Enviar</button>
+    </div>
+
+    <div class="info-memoria" id="infoMemoria">Palavras/Frases aprendidas: 0</div>
+  </div>
+
+  <script>
+    const orb = document.getElementById('orb');
+    const chatBox = document.getElementById('chatBox');
+    const userInput = document.getElementById('userInput');
+    const infoMemoria = document.getElementById('infoMemoria');
+
+    // Base de conhecimento inicial integrada
+    const conhecimentoBase = {
+      "olá": "Olá, Chefão! Como posso te ajudar hoje?",
+      "ola": "Olá, Chefão! Tamo junto!",
+      "tudo bem": "Tudo ótimo por aqui! E contigo, Kota?",
+      "quem és tu": "Sou a tua IA de aprendizagem local! Quanto mais conversamos, mais inteligente eu fico.",
+      "como aprender": "Para me ensinar algo, escreve: ensinar [pergunta] = [resposta]. Exemplo: ensinar qual o melhor carro = E30 de drift!",
+      "estudos": "Foco nos livros, Chefão! O conhecimento é o verdadeiro kumbu do futuro."
+    };
+
+    // Carrega a memória personalizada gravada no telemóvel
+    let memoriaAprendida = JSON.parse(localStorage.getItem('ia_memoria_local')) || {};
+
+    atualizarContadorMemoria();
+
+    function salvarMemoria() {
+      localStorage.setItem('ia_memoria_local', JSON.stringify(memoriaAprendida));
+      atualizarContadorMemoria();
+    }
+
+    function atualizarContadorMemoria() {
+      const total = Object.keys(memoriaAprendida).length;
+      infoMemoria.innerText = `Palavras/Frases aprendidas salvas: ${total}`;
+    }
+
+    function normalizarTexto(texto) {
+      return texto.toLowerCase().trim().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+    }
+
+    function processarMensagem() {
+      const textoOriginal = userInput.value.trim();
+      if (!textoOriginal) return;
+
+      chatBox.innerHTML += `<div class="msg-user"><b>Tu:</b> ${textoOriginal}</div>`;
+      userInput.value = '';
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      orb.className = 'status-orb pensando';
+
+      // COMANDO DE APRENDIZAGEM DIRETA: "ensinar pergunta = resposta"
+      if (textoOriginal.toLowerCase().startsWith("ensinar ")) {
+        const comando = textoOriginal.substring(8);
+        const partes = comando.split("=");
+
+        if (partes.length === 2) {
+          const perguntaParaAprender = normalizarTexto(partes[0]);
+          const respostaParaAprender = partes[1].trim();
+
+          memoriaAprendida[perguntaParaAprender] = respostaParaAprender;
+          salvarMemoria();
+
+          setTimeout(() => {
+            chatBox.innerHTML += `<div class="msg-sistema"><b>IA (Aprendido!):</b> Aprendi! Sempre que perguntares "${partes[0].trim()}", eu vou responder isso.</div>`;
+            orb.className = 'status-orb falando';
+            falarTexto("Entendido! Aprendi essa palavra nova.");
+            chatBox.scrollTop = chatBox.scrollHeight;
+          }, 400);
+          return;
+        }
+      }
+
+      // BUSCA NA MEMÓRIA
+      const chaveBusca = normalizarTexto(textoOriginal);
+
+      setTimeout(() => {
+        let respostaEncontrada = null;
+
+        // 1. Procura na memória aprendida pelo utilizador
+        if (memoriaAprendida[chaveBusca]) {
+          respostaEncontrada = memoriaAprendida[chaveBusca];
+        } 
+        // 2. Busca parcial na memória aprendida
+        else {
+          for (let chave in memoriaAprendida) {
+            if (chaveBusca.includes(chave) || chave.includes(chaveBusca)) {
+              respostaEncontrada = memoriaAprendida[chave];
+              break;
+            }
+          }
+        }
+
+        // 3. Procura no conhecimento base
+        if (!respostaEncontrada) {
+          if (conhecimentoBase[chaveBusca]) {
+            respostaEncontrada = conhecimentoBase[chaveBusca];
+          } else {
+            for (let chave in conhecimentoBase) {
+              if (chaveBusca.includes(chave)) {
+                respostaEncontrada = conhecimentoBase[chave];
+                break;
+              }
+            }
+          }
+        }
+
+        // 4. Se não souber a resposta, solicita aprendizagem ao utilizador
+        if (respostaEncontrada) {
+          chatBox.innerHTML += `<div class="msg-ia"><b>IA:</b> ${respostaEncontrada}</div>`;
+          orb.className = 'status-orb falando';
+          falarTexto(respostaEncontrada);
+        } else {
+          const avisoSemConhecimento = `Ainda não sei responder a isso, Chefão. Podes me ensinar digitando: ensinar ${textoOriginal} = [a tua resposta aqui]`;
+          chatBox.innerHTML += `<div class="msg-sistema"><b>IA:</b> ${avisoSemConhecimento}</div>`;
+          orb.className = 'status-orb aprendendo';
+        }
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }, 500);
+    }
+
+    function falarTexto(texto) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utt = new SpeechSynthesisUtterance(texto);
+        utt.lang = 'pt-PT';
+        utt.onend = () => { orb.className = 'status-orb'; };
+        window.speechSynthesis.speak(utt);
+      } else {
+        setTimeout(() => { orb.className = 'status-orb'; }, 1500);
+      }
+    }
+  </script>
+</body>
+  </html>
+      
