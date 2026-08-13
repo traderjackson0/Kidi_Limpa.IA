@@ -1,320 +1,571 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-AO">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IA Local Pro - Sistema de Bibliotecas</title>
+  <title>Nyore.IA — Assistente Angolana Inteligente</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-deep: #120E23;
+      --surface: #1B1636;
+      --surface-2: #241D45;
+      --lavender: #F3F0FF;
+      --violet: #7C6CF6;
+      --violet-soft: #5A4FD9;
+      --amber: #FFB13C;
+      --coral: #FF5D8F;
+      --emerald: #2ECC71;
+      --cyan: #3498DB;
+      --muted: #9C95C4;
+      --ink: #12102A;
+
+      --display: 'Sora', sans-serif;
+      --body: 'Inter', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: 'Segoe UI', Roboto, sans-serif;
-      background-color: #0d0d14;
-      color: #cdd6f4;
+      background:
+        radial-gradient(circle at 15% 0%, #221c42 0%, transparent 55%),
+        radial-gradient(circle at 95% 100%, #1a1638 0%, transparent 50%),
+        var(--bg-deep);
+      min-height: 100vh;
+      font-family: var(--body);
+      padding: 24px 12px;
+      color: var(--lavender);
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      padding: 10px;
     }
 
-    .widget-flutuante {
+    .board {
       width: 100%;
-      max-width: 650px;
-      height: 94vh;
-      background: #161622;
-      border-radius: 20px;
-      padding: 15px;
-      border: 1px solid #2a2a3d;
+      max-width: 420px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .phone {
+      width: 100%;
+      height: 780px;
+      background: linear-gradient(180deg, #1a1638, #120e23);
+      border-radius: 40px;
+      border: 8px solid #08061a;
+      box-shadow:
+        0 30px 70px -18px rgba(0,0,0,.8),
+        0 0 0 1px rgba(124,108,246,.2);
+      overflow: hidden;
+      position: relative;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
     }
 
-    .status-orb {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: radial-gradient(circle, #7289da 0%, #161622 70%);
-      margin-bottom: 10px;
-      box-shadow: 0 0 20px #7289da;
+    .notch {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 120px; height: 22px;
+      background: #08061a;
+      border-radius: 0 0 16px 16px;
+      z-index: 50;
+    }
+
+    .statusbar {
+      height: 40px;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      padding: 0 22px 6px;
+      font-family: var(--mono); font-size: 11px; color: var(--lavender);
       flex-shrink: 0;
-      transition: all 0.3s ease;
+      z-index: 10;
     }
 
-    .status-orb.pensando { background: radial-gradient(circle, #f1c40f 0%, #161622 70%); box-shadow: 0 0 25px #f1c40f; }
-    .status-orb.aprendendo { background: radial-gradient(circle, #e67e22 0%, #161622 70%); box-shadow: 0 0 25px #e67e22; }
-    .status-orb.falando { background: radial-gradient(circle, #2ecc71 0%, #161622 70%); box-shadow: 0 0 30px #2ecc71; }
+    .home-top {
+      padding: 8px 22px 0;
+      flex-shrink: 0;
+    }
+    .home-top .hello {
+      font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 2px;
+    }
+    .home-top h2 {
+      font-family: var(--display); font-weight: 600; font-size: 18px; color: var(--lavender);
+    }
 
+    /* Estágio do Orbe DInâmico */
+    .orb-stage {
+      height: 200px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .orb {
+      width: 120px; height: 120px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #a89bff, var(--violet) 55%, var(--violet-soft) 100%);
+      box-shadow: 0 0 50px 8px rgba(124,108,246,.4);
+      position: relative;
+      transition: all 0.5s ease;
+      animation: breathe 3.4s ease-in-out infinite;
+    }
+    .orb::after {
+      content: '';
+      position: absolute; inset: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, rgba(255,255,255,.5), transparent 60%);
+    }
+
+    /* Estados Visuais do Orbe */
+    .orb.pesquisando {
+      background: radial-gradient(circle at 35% 30%, #74b9ff, var(--cyan) 55%, #0984e3 100%);
+      box-shadow: 0 0 60px 12px rgba(52, 152, 219, 0.6);
+      animation: pulseFast 1.2s ease-in-out infinite;
+    }
+    .orb.falando {
+      background: radial-gradient(circle at 35% 30%, #55efc4, var(--emerald) 55%, #00b894 100%);
+      box-shadow: 0 0 60px 12px rgba(46, 204, 113, 0.6);
+    }
+    .orb.aprendendo {
+      background: radial-gradient(circle at 35% 30%, #ffeaa7, var(--amber) 55%, #e67e22 100%);
+      box-shadow: 0 0 60px 12px rgba(255, 177, 60, 0.6);
+    }
+
+    @keyframes breathe {
+      0%,100%{ transform: scale(1); }
+      50%{ transform: scale(1.05); }
+    }
+    @keyframes pulseFast {
+      0%,100%{ transform: scale(0.98); }
+      50%{ transform: scale(1.08); }
+    }
+
+    .ring {
+      position: absolute; border-radius: 50%;
+      border: 1px solid rgba(124,108,246,.25);
+      transition: all 0.5s ease;
+    }
+    .ring.r1 { width: 160px; height: 160px; }
+    .ring.r2 { width: 200px; height: 200px; border-color: rgba(124,108,246,.14); }
+
+    .orb-caption {
+      position: absolute; bottom: 8px; left: 0; right: 0;
+      text-align: center;
+    }
+    .orb-caption .state {
+      font-family: var(--display); font-weight: 600; font-size: 13px; color: var(--lavender);
+    }
+    .orb-caption .hint {
+      font-family: var(--mono); font-size: 9.5px; color: var(--muted);
+    }
+
+    /* Caixa de Diálogo (Chat Scrollável) */
     .chat-box {
-      width: 100%;
       flex: 1;
-      background: #0b0b12;
-      border: 1px solid #28283a;
-      border-radius: 15px;
-      padding: 15px;
+      background: rgba(11, 9, 22, 0.6);
+      border-top: 1px solid rgba(243,240,255,.08);
+      border-bottom: 1px solid rgba(243,240,255,.08);
+      padding: 12px 16px;
       overflow-y: auto;
-      margin-bottom: 12px;
-      font-size: 0.95em;
-      line-height: 1.5;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      font-size: 12px;
+      line-height: 1.5;
     }
 
-    .msg-user { color: #7289da; background: #1c1c2e; padding: 10px 14px; border-radius: 12px; align-self: flex-end; max-width: 85%; }
-    .msg-ia { color: #2ecc71; background: #12221a; padding: 10px 14px; border-radius: 12px; align-self: flex-start; max-width: 85%; }
-    .msg-sistema { color: #e67e22; background: #261c14; padding: 8px 12px; border-radius: 10px; align-self: center; font-style: italic; font-size: 0.88em; }
+    .msg {
+      padding: 10px 12px;
+      border-radius: 14px;
+      max-width: 90%;
+      word-wrap: break-word;
+    }
+    .msg-user {
+      align-self: flex-end;
+      background: var(--surface-2);
+      border: 1px solid rgba(124,108,246,.3);
+      color: var(--lavender);
+    }
+    .msg-ia {
+      align-self: flex-start;
+      background: var(--surface);
+      border: 1px solid rgba(243,240,255,.1);
+      color: var(--lavender);
+    }
+    .msg-sistema {
+      align-self: center;
+      background: rgba(255,177,60,.1);
+      border: 1px solid rgba(255,177,60,.2);
+      color: var(--amber);
+      font-family: var(--mono);
+      font-size: 10px;
+      text-align: center;
+    }
 
-    .input-group { width: 100%; display: flex; gap: 8px; flex-shrink: 0; }
+    /* Barra de Entrada de Texto */
+    .input-section {
+      padding: 10px 14px;
+      background: var(--surface);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-shrink: 0;
+    }
 
-    textarea {
+    .input-section textarea {
       flex: 1;
-      background: #202030;
-      border: 1px solid #3b3b54;
+      background: rgba(18, 14, 35, 0.8);
+      border: 1px solid rgba(124,108,246,.3);
       border-radius: 12px;
-      padding: 12px;
+      padding: 10px;
       color: #fff;
-      font-size: 0.95em;
+      font-family: var(--body);
+      font-size: 12px;
       outline: none;
       resize: none;
-      height: 50px;
-      font-family: inherit;
+      height: 42px;
     }
 
-    .btn {
-      background: #7289da;
-      color: #fff;
+    .btn-send {
+      width: 42px; height: 42px;
+      background: var(--violet);
       border: none;
-      padding: 0 20px;
       border-radius: 12px;
-      font-weight: bold;
+      color: var(--ink);
+      display: flex; align-items: center; justify-content: center;
       cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s;
     }
+    .btn-send:hover { background: var(--violet-soft); color: #fff; }
 
-    .info-memoria {
-      font-size: 0.75em;
-      color: #888;
-      margin-top: 6px;
+    /* Barra Inferior de Métricas */
+    .mem-footer {
+      padding: 6px 16px 12px;
+      background: var(--bg-deep);
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
       flex-shrink: 0;
     }
   </style>
 </head>
 <body>
 
-  <div class="widget-flutuante">
-    <div id="orb" class="status-orb"></div>
-    
-    <div class="chat-box" id="chatBox"></div>
-
-    <div class="input-group">
-      <textarea id="userInput" placeholder="Escreve uma pergunta ou cole uma lista para me ensinar..." onkeydown="checarEnter(event)"></textarea>
-      <button class="btn" onclick="processarMensagem()">Enviar</button>
+<div class="board">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="statusbar">
+      <span id="relogio">00:00</span>
+      <span>NYORE.IA</span>
+      <span>100%</span>
     </div>
 
-    <div class="info-memoria" id="infoMemoria">Bibliotecas ativas: 0 | Conhecimento salvo: 0</div>
+    <div class="home-top">
+      <div class="hello" id="saudacao">Boa noite</div>
+      <h2 id="tituloPrincipal">Diz, estou a ouvir.</h2>
+    </div>
+
+    <!-- Orbe Visual -->
+    <div class="orb-stage">
+      <div class="ring r2" id="ring2"></div>
+      <div class="ring r1" id="ring1"></div>
+      <div class="orb" id="orb"></div>
+      <div class="orb-caption">
+        <div class="state" id="orbState">Pronta</div>
+        <div class="hint" id="orbHint">digita ou conversa abaixo</div>
+      </div>
+    </div>
+
+    <!-- Caixa de Conversa -->
+    <div class="chat-box" id="chatBox"></div>
+
+    <!-- Painel de Input -->
+    <div class="input-section">
+      <textarea id="userInput" placeholder="Pergunta algo ou ensina com: ensinar [x] = [y]" onkeydown="checarEnter(event)"></textarea>
+      <button class="btn-send" onclick="processarMensagem()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+
+    <div class="mem-footer">
+      <span id="infoCategorias">Categorias: 0</span>
+      <span id="infoItens">Itens Aprendidos: 0</span>
+    </div>
   </div>
+</div>
 
-  <script>
-    const orb = document.getElementById('orb');
-    const chatBox = document.getElementById('chatBox');
-    const userInput = document.getElementById('userInput');
-    const infoMemoria = document.getElementById('infoMemoria');
+<script>
+  // ELEMENTOS DA INTERFACE
+  const orb = document.getElementById('orb');
+  const orbState = document.getElementById('orbState');
+  const orbHint = document.getElementById('orbHint');
+  const chatBox = document.getElementById('chatBox');
+  const userInput = document.getElementById('userInput');
+  const saudacao = document.getElementById('saudacao');
+  const relogio = document.getElementById('relogio');
+  const infoCategorias = document.getElementById('infoCategorias');
+  const infoItens = document.getElementById('infoItens');
 
-    // Estrutura de Bibliotecas por Categoria
-    let bibliotecas = JSON.parse(localStorage.getItem('ia_bibliotecas')) || {
-      "Gerais": {
-        "olá": "Olá! Como posso te ajudar hoje?",
-        "tudo bem": "Tudo ótimo por aqui! E contigo?"
-      },
-      "Tecnologia": {
-        "o que é html": "HTML é a linguagem de marcação usada para criar a estrutura das páginas e sites.",
-        "o que é javascript": "JavaScript é a linguagem de programação usada para dar dinamismo e inteligência aos sites."
-      },
-      "Gírias": {
-        "o que é kumbu": "Kumbu é dinheiro!",
-        "o que é kota": "Kota é uma pessoa mais velha, respeitada ou com mais experiência."
-      }
-    };
+  // BIBLIOTECAS AMPLIADAS DE CONHECIMENTO BASE
+  let bibliotecas = JSON.parse(localStorage.getItem('nyore_bibliotecas')) || {
+    "Gerais": {
+      "olá": "Olá! Como posso ajudar nos teus estudos e tarefas hoje?",
+      "quem és tu": "Sou a Nyore.IA, a tua assistente virtual angolana para aprendizagem, organização e pesquisas.",
+      "tudo bem": "Tudo ótimo por aqui! Pronta para trabalhar."
+    },
+    "Informática de Gestão": {
+      "o que é sistema de informação": "É um conjunto organizado de elementos (pessoas, dados, processos e tecnologia) que recolhe, processa, armazena e distribui informação para apoiar a tomada de decisões numa organização.",
+      "o que é banco de dados": "É uma coleção organizada de dados estruturados, armazenados eletronicamente, permitindo acesso, manipulação e atualização rápida via SQL.",
+      "o que é erp": "ERP (Enterprise Resource Planning) é um software de gestão empresarial que integra todos os departamentos de uma empresa num único sistema."
+    },
+    "Programação": {
+      "o que é html": "HTML (HyperText Markup Language) é a linguagem de marcação padrão para criar e estruturar páginas na web.",
+      "o que é python": "Python é uma linguagem de programação de alto nível, interpretada, de sintaxe simples e muito utilizada em IA, automação e desenvolvimento web.",
+      "o que é c sharp": "C# é uma linguagem de programação orientada a objetos desenvolvida pela Microsoft, amplamente utilizada no desenvolvimento de aplicações desktop, web e jogos."
+    },
+    "Redes de Computadores": {
+      "o que é endereço ip": "É um identificador numérico único atribuído a cada dispositivo ligado a uma rede de computadores que utiliza o protocolo IP para comunicação.",
+      "o que é router": "Um router (ou roteador) é um dispositivo de rede que encaminha pacotes de dados entre diferentes redes de computadores.",
+      "o que é modelo osi": "É um modelo de referência de 7 camadas que padroniza as funções de um sistema de comunicação ou rede de computadores."
+    },
+    "História e Geografia de Angola": {
+      "quando foi a independência de angola": "Angola proclamou a sua independência a 11 de Novembro de 1975.",
+      "qual é a capital de angola": "A capital de Angola é Luanda.",
+      "quem foi o primeiro presidente de angola": "O primeiro Presidente de Angola foi o Dr. António Agostinho Neto."
+    },
+    "Gírias e Expressões": {
+      "o que significa kumbu": "Kumbu é uma gíria angolana para dinheiro.",
+      "o que significa mboa": "Mboa é uma expressão informal usada para referir a uma namorada ou rapariga.",
+      "o que significa kota": "Kota é um termo de respeito utilizado para se referir a uma pessoa mais velha ou com maior experiência."
+    }
+  };
 
-    let nomeUsuario = localStorage.getItem('ia_nome_usuario') || "";
-    let aguardandoNome = false;
+  let nomeUsuario = localStorage.getItem('nyore_nome_usuario') || "";
+  let aguardandoNome = false;
 
-    atualizarContadorMemoria();
-    iniciarBoasVindas();
+  // INICIALIZAÇÃO
+  atualizarRelogio();
+  setInterval(atualizarRelogio, 1000);
+  atualizarContadores();
+  iniciarSessao();
 
-    function checarEnter(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        processarMensagem();
+  function atualizarRelogio() {
+    const agora = new Date();
+    const h = String(agora.getHours()).padStart(2, '0');
+    const m = String(agora.getMinutes()).padStart(2, '0');
+    relogio.innerText = `${h}:${m}`;
+
+    const hora = agora.getHours();
+    if (hora >= 5 && hora < 12) saudacao.innerText = "Bom dia";
+    else if (hora >= 12 && hora < 18) saudacao.innerText = "Boa tarde";
+    else saudacao.innerText = "Boa noite";
+  }
+
+  function iniciarSessao() {
+    if (!nomeUsuario) {
+      aguardandoNome = true;
+      adicionarMsgIA("Olá! Sou a Nyore.IA. Como gostaria que eu te chamasse?");
+    } else {
+      adicionarMsgIA(`Olá, ${nomeUsuario}! Como posso ajudar nos teus estudos hoje?`);
+    }
+  }
+
+  function checarEnter(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      processarMensagem();
+    }
+  }
+
+  function salvarBibliotecas() {
+    localStorage.setItem('nyore_bibliotecas', JSON.stringify(bibliotecas));
+    atualizarContadores();
+  }
+
+  function atualizarContadores() {
+    let totalItens = 0;
+    let totalCategorias = Object.keys(bibliotecas).length;
+    for (let cat in bibliotecas) {
+      totalItens += Object.keys(bibliotecas[cat]).length;
+    }
+    infoCategorias.innerText = `Categorias: ${totalCategorias}`;
+    infoItens.innerText = `Itens Aprendidos: ${totalItens}`;
+  }
+
+  function normalizarTexto(texto) {
+    return texto.toLowerCase().trim().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+  }
+
+  function categorizarAutomatico(pergunta) {
+    const p = pergunta.toLowerCase();
+    if (p.includes("html") || p.includes("python") || p.includes("c#") || p.includes("código") || p.includes("script")) return "Programação";
+    if (p.includes("ip") || p.includes("router") || p.includes("rede") || p.includes("switch") || p.includes("osi")) return "Redes de Computadores";
+    if (p.includes("gestão") || p.includes("dados") || p.includes("erp") || p.includes("sistema")) return "Informática de Gestão";
+    if (p.includes("angola") || p.includes("luanda") || p.includes("presidente") || p.includes("independência")) return "História e Geografia de Angola";
+    if (p.includes("kumbu") || p.includes("mboa") || p.includes("kota") || p.includes("camba")) return "Gírias e Expressões";
+    return "Conhecimento Geral";
+  }
+
+  function adicionarMsgUser(msg) {
+    chatBox.innerHTML += `<div class="msg msg-user">${msg.replace(/\n/g, '<br>')}</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function adicionarMsgIA(msg) {
+    chatBox.innerHTML += `<div class="msg msg-ia">${msg.replace(/\n/g, '<br>')}</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function adicionarMsgSistema(msg) {
+    chatBox.innerHTML += `<div class="msg msg-sistema">${msg}</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function definirEstado(estado, orbeClasse, dica) {
+    orbState.innerText = estado;
+    orb.className = `orb ${orbeClasse}`;
+    orbHint.innerText = dica;
+  }
+
+  async function processarMensagem() {
+    const textoOriginal = userInput.value.trim();
+    if (!textoOriginal) return;
+
+    adicionarMsgUser(textoOriginal);
+    userInput.value = '';
+    definirEstado("A processar...", "", "a analisar mensagem");
+
+    if (aguardandoNome) {
+      nomeUsuario = textoOriginal;
+      localStorage.setItem('nyore_nome_usuario', nomeUsuario);
+      aguardandoNome = false;
+      setTimeout(() => {
+        definirEstado("Pronta", "falando", "nome registado");
+        adicionarMsgIA(`Prazer em conhecer-te, ${nomeUsuario}! A tua assistente está pronta.`);
+      }, 400);
+      return;
+    }
+
+    const chaveBusca = normalizarTexto(textoOriginal);
+
+    // APRENDIZADO DIRETO
+    if (textoOriginal.toLowerCase().includes("ensinar ") || textoOriginal.includes("=")) {
+      let linhas = textoOriginal.split(/\n|;/);
+      let aprendidos = 0;
+
+      linhas.forEach(linha => {
+        let posEnsinar = linha.toLowerCase().indexOf("ensinar ");
+        let textoTratado = posEnsinar !== -1 ? linha.substring(posEnsinar + 8) : linha;
+        let partes = textoTratado.split("=");
+
+        if (partes.length === 2) {
+          let pergunta = normalizarTexto(partes[0]);
+          let resposta = partes[1].trim();
+          let categoria = categorizarAutomatico(pergunta);
+
+          if (!bibliotecas[categoria]) bibliotecas[categoria] = {};
+          bibliotecas[categoria][pergunta] = resposta;
+          aprendidos++;
+        }
+      });
+
+      if (aprendidos > 0) {
+        salvarBibliotecas();
+        setTimeout(() => {
+          definirEstado("Aprendeu!", "aprendendo", "novo conhecimento guardado");
+          adicionarMsgSistema(`Adicionei ${aprendidos} novo(s) tópico(s) às bibliotecas.`);
+        }, 400);
+        return;
       }
     }
 
-    function iniciarBoasVindas() {
-      if (!nomeUsuario) {
-        aguardandoNome = true;
-        adicionarMsgIA("Olá! Sou a tua IA com sistema de bibliotecas inteligentes. Para começarmos, como gostaria que eu te chamasse?");
+    // 1º PASSO: BUSCA INTERNA NAS BIBLIOTECAS
+    let resultadoLocal = buscarNasBibliotecas(chaveBusca);
+
+    if (resultadoLocal) {
+      setTimeout(() => {
+        definirEstado("Pronta", "falando", "resposta interna");
+        adicionarMsgIA(resultadoLocal);
+      }, 300);
+    } else {
+      // 2º PASSO: CONSULTA EXTERNA E REFORMULAÇÃO NATURAL
+      definirEstado("A consultar...", "pesquisando", "a sintetizar conhecimento");
+      adicionarMsgSistema("A procurar a melhor resposta...");
+
+      let respostaSintetizada = await pesquisarESintetizar(textoOriginal);
+
+      if (respostaSintetizada) {
+        definirEstado("Pronta", "falando", "resposta articulada");
+        adicionarMsgIA(respostaSintetizada);
       } else {
-        adicionarMsgIA(`Olá, ${nomeUsuario}! Em que posso te ajudar hoje? Podes me fazer perguntas ou colar uma lista inteira de conhecimentos!`);
+        definirEstado("Aprender", "aprendendo", "submete uma definição");
+        adicionarMsgIA(`Não encontrei dados suficientes sobre isso no momento. Podes me ensinar usando: ensinar ${textoOriginal} = [explicação]`);
       }
     }
+  }
 
-    function salvarBibliotecas() {
-      localStorage.setItem('ia_bibliotecas', JSON.stringify(bibliotecas));
-      atualizarContadorMemoria();
-    }
+  function buscarNasBibliotecas(textoUsuario) {
+    const palavrasUsuario = textoUsuario.split(" ").filter(p => p.length > 2);
+    let melhorResposta = null;
+    let maiorPontuacao = 0;
 
-    function atualizarContadorMemoria() {
-      let totalItens = 0;
-      let totalCategorias = Object.keys(bibliotecas).length;
-      for (let cat in bibliotecas) {
-        totalItens += Object.keys(bibliotecas[cat]).length;
-      }
-      infoMemoria.innerText = `Bibliotecas ativas: ${totalCategorias} | Total de itens aprendidos: ${totalItens}`;
-    }
+    for (let categoria in bibliotecas) {
+      let banco = bibliotecas[categoria];
+      for (let perguntaSalva in banco) {
+        let pontuacao = 0;
 
-    function normalizarTexto(texto) {
-      return texto.toLowerCase().trim().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-    }
+        if (textoUsuario === perguntaSalva) return banco[perguntaSalva];
 
-    function categorizarAutomatico(pergunta) {
-      const p = pergunta.toLowerCase();
-      if (p.includes("kumbu") || p.includes("kota") || p.includes("mboa") || p.includes("camba") || p.includes("bisno")) return "Gírias";
-      if (p.includes("html") || p.includes("javascript") || p.includes("css") || p.includes("código") || p.includes("ia")) return "Tecnologia";
-      if (p.includes("angola") || p.includes("luanda") || p.includes("província") || p.includes("rio") || p.includes("capital")) return "Geografia e História";
-      return "Conhecimento Geral";
-    }
-
-    function adicionarMsgUser(msg) {
-      chatBox.innerHTML += `<div class="msg-user"><b>Tu:</b> ${msg.replace(/\n/g, '<br>')}</div>`;
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    function adicionarMsgIA(msg) {
-      chatBox.innerHTML += `<div class="msg-ia"><b>IA:</b> ${msg}</div>`;
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    function adicionarMsgSistema(msg) {
-      chatBox.innerHTML += `<div class="msg-sistema">${msg}</div>`;
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    function processarMensagem() {
-      const textoOriginal = userInput.value.trim();
-      if (!textoOriginal) return;
-
-      adicionarMsgUser(textoOriginal);
-      userInput.value = '';
-      orb.className = 'status-orb pensando';
-
-      // CAPTURA DO NOME DO UTILIZADOR
-      if (aguardandoNome) {
-        nomeUsuario = textoOriginal;
-        localStorage.setItem('ia_nome_usuario', nomeUsuario);
-        aguardandoNome = false;
-        setTimeout(() => {
-          adicionarMsgIA(`Perfeito, ${nomeUsuario}! Registei o teu nome. Agora podes conversar comigo ou colar várias frases para eu aprender de uma vez!`);
-          orb.className = 'status-orb falando';
-        }, 400);
-        return;
-      }
-
-      const chaveBusca = normalizarTexto(textoOriginal);
-
-      // RESPOSTAS VARIADAS AO NOME DO UTILIZADOR
-      if (nomeUsuario && chaveBusca.includes(normalizarTexto(nomeUsuario))) {
-        const respostasVariadas = [
-          `Olá, ${nomeUsuario}! No que posso ajudar?`,
-          `Diz lá, ${nomeUsuario}! Estou a ouvir.`,
-          `Presente, ${nomeUsuario}! Qual é o mambo de hoje?`,
-          `Fala comigo, ${nomeUsuario}! Pronta para processar novas informações.`
-        ];
-        const respostaSorteada = respostasVariadas[Math.floor(Math.random() * respostasVariadas.length)];
-        setTimeout(() => {
-          adicionarMsgIA(respostaSorteada);
-          orb.className = 'status-orb falando';
-        }, 400);
-        return;
-      }
-
-      // APRENDIZADO EM MASSA OU FRASE ÚNICA
-      if (textoOriginal.toLowerCase().includes("ensinar ") || textoOriginal.includes("=")) {
-        let linhas = textoOriginal.split(/\n|;/); // Divide por quebra de linha ou ponto e vírgula
-        let aprendidos = 0;
-
-        linhas.forEach(linha => {
-          let posEnsinar = linha.toLowerCase().indexOf("ensinar ");
-          let textoTratado = posEnsinar !== -1 ? linha.substring(posEnsinar + 8) : linha;
-          let partes = textoTratado.split("=");
-
-          if (partes.length === 2) {
-            let pergunta = normalizarTexto(partes[0]);
-            let resposta = partes[1].trim();
-            let categoria = categorizarAutomatico(pergunta);
-
-            if (!bibliotecas[categoria]) bibliotecas[categoria] = {};
-            bibliotecas[categoria][pergunta] = resposta;
-            aprendidos++;
-          }
+        palavrasUsuario.forEach(palavra => {
+          if (perguntaSalva.includes(palavra)) pontuacao += 2;
         });
 
-        if (aprendidos > 0) {
-          salvarBibliotecas();
-          setTimeout(() => {
-            adicionarMsgSistema(`<b>IA (Aprendizado Concluído):</b> Processei e aprendi ${aprendidos} item(ns) novo(s) e organizei-os nas bibliotecas correspondentes!`);
-            orb.className = 'status-orb falando';
-          }, 500);
-          return;
+        if (pontuacao > maiorPontuacao && pontuacao >= 2) {
+          maiorPontuacao = pontuacao;
+          melhorResposta = banco[perguntaSalva];
+        }
+      }
+    }
+    return melhorResposta;
+  }
+
+  // PESQUISA E FORMATAÇÃO NATURAL (SEM FRASES DE BUSCA BRUTA)
+  async function pesquisarESintetizar(termo) {
+    try {
+      // Tenta recuperar resumo da Wikipedia em Português
+      const urlWiki = `https://pt.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(termo)}`;
+      const respWiki = await fetch(urlWiki);
+      if (respWiki.ok) {
+        const dadosWiki = await respWiki.json();
+        if (dadosWiki.extract) {
+          return formatarRespostaNativa(dadosWiki.extract);
         }
       }
 
-      // BUSCA OTIMIZADA POR BIBLIOTECAS E PALAVRAS-CHAVE
-      setTimeout(() => {
-        let resultado = buscarNasBibliotecas(chaveBusca);
-
-        if (resultado) {
-          adicionarMsgIA(resultado);
-          orb.className = 'status-orb falando';
-        } else {
-          const aviso = `Ainda não tenho essa informação registrada nas minhas bibliotecas, ${nomeUsuario}. Podes colar a resposta usando: ensinar [pergunta] = [resposta]`;
-          adicionarMsgSistema(aviso);
-          orb.className = 'status-orb aprendendo';
-        }
-      }, 500);
-    }
-
-    function buscarNasBibliotecas(textoUsuario) {
-      const palavrasUsuario = textoUsuario.split(" ").filter(p => p.length > 2);
-      let melhorResposta = null;
-      let maiorPontuacao = 0;
-
-      // Percorre as bibliotecas organizadas
-      for (let categoria in bibliotecas) {
-        let banco = bibliotecas[categoria];
-
-        for (let perguntaSalva in banco) {
-          let pontuacao = 0;
-
-          // Se a busca for exata
-          if (textoUsuario === perguntaSalva) return banco[perguntaSalva];
-
-          // Busca contextual por palavras
-          palavrasUsuario.forEach(palavra => {
-            if (perguntaSalva.includes(palavra)) {
-              pontuacao += 2;
-            }
-          });
-
-          if (pontuacao > maiorPontuacao && pontuacao >= 2) {
-            maiorPontuacao = pontuacao;
-            melhorResposta = banco[perguntaSalva];
-          }
+      // Alternativa via DuckDuckGo Instant Answer API
+      const urlDDG = `https://api.duckduckgo.com/?q=${encodeURIComponent(termo)}&format=json&kl=pt-pt&no_html=1`;
+      const respDDG = await fetch(urlDDG);
+      if (respDDG.ok) {
+        const dadosDDG = await respDDG.json();
+        if (dadosDDG.AbstractText) {
+          return formatarRespostaNativa(dadosDDG.AbstractText);
+        } else if (dadosDDG.RelatedTopics && dadosDDG.RelatedTopics.length > 0 && dadosDDG.RelatedTopics[0].Text) {
+          return formatarRespostaNativa(dadosDDG.RelatedTopics[0].Text);
         }
       }
 
-      return melhorResposta;
+      return null;
+    } catch (e) {
+      return null;
     }
-  </script>
-</body>
-</html>
+  }
+
+  function formatarRespostaNativa(textoBruto) {
+    // Remove marcadores técnicos ou pontuações excessivas
+    let limpo = textoBruto.replace(/\[\d+\]/g, "").trim();
+    
+    // Assegura que a IA responde com autoridade e fluidez
+    if (!limpo.endsWith(".")) limpo += ".";
+ 
