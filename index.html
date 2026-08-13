@@ -51,7 +51,7 @@
 
     .phone {
       width: 100%;
-      height: 780px;
+      height: 810px;
       background: linear-gradient(180deg, #1a1638, #120e23);
       border-radius: 40px;
       border: 8px solid #08061a;
@@ -82,7 +82,7 @@
     }
 
     .home-top {
-      padding: 8px 22px 0;
+      padding: 6px 22px 0;
       flex-shrink: 0;
     }
     .home-top .hello {
@@ -93,29 +93,29 @@
       font-family: var(--display); font-weight: 600; font-size: 18px; color: var(--lavender);
     }
 
-    /* Estágio do Orbe DInâmico */
+    /* Estágio do Orbe Dinâmico */
     .orb-stage {
-      height: 200px;
+      height: 170px;
       display: flex; align-items: center; justify-content: center;
       position: relative;
       flex-shrink: 0;
     }
     .orb {
-      width: 120px; height: 120px; border-radius: 50%;
+      width: 110px; height: 110px; border-radius: 50%;
       background: radial-gradient(circle at 35% 30%, #a89bff, var(--violet) 55%, var(--violet-soft) 100%);
       box-shadow: 0 0 50px 8px rgba(124,108,246,.4);
       position: relative;
       transition: all 0.5s ease;
       animation: breathe 3.4s ease-in-out infinite;
+      cursor: pointer;
     }
     .orb::after {
       content: '';
-      position: absolute; inset: 14px;
+      position: absolute; inset: 12px;
       border-radius: 50%;
       background: radial-gradient(circle at 40% 35%, rgba(255,255,255,.5), transparent 60%);
     }
 
-    /* Estados Visuais do Orbe */
     .orb.pesquisando {
       background: radial-gradient(circle at 35% 30%, #74b9ff, var(--cyan) 55%, #0984e3 100%);
       box-shadow: 0 0 60px 12px rgba(52, 152, 219, 0.6);
@@ -129,125 +129,119 @@
       background: radial-gradient(circle at 35% 30%, #ffeaa7, var(--amber) 55%, #e67e22 100%);
       box-shadow: 0 0 60px 12px rgba(255, 177, 60, 0.6);
     }
-
-    @keyframes breathe {
-      0%,100%{ transform: scale(1); }
-      50%{ transform: scale(1.05); }
-    }
-    @keyframes pulseFast {
-      0%,100%{ transform: scale(0.98); }
-      50%{ transform: scale(1.08); }
+    .orb.inativo {
+      background: radial-gradient(circle at 35% 30%, #636e72, #2d3436 100%);
+      box-shadow: none;
+      animation: none;
     }
 
-    .ring {
-      position: absolute; border-radius: 50%;
-      border: 1px solid rgba(124,108,246,.25);
-      transition: all 0.5s ease;
-    }
-    .ring.r1 { width: 160px; height: 160px; }
-    .ring.r2 { width: 200px; height: 200px; border-color: rgba(124,108,246,.14); }
+    @keyframes breathe { 0%,100%{ transform: scale(1); } 50%{ transform: scale(1.05); } }
+    @keyframes pulseFast { 0%,100%{ transform: scale(0.98); } 50%{ transform: scale(1.08); } }
+
+    .ring { position: absolute; border-radius: 50%; border: 1px solid rgba(124,108,246,.25); }
+    .ring.r1 { width: 140px; height: 140px; }
+    .ring.r2 { width: 180px; height: 180px; border-color: rgba(124,108,246,.14); }
 
     .orb-caption {
-      position: absolute; bottom: 8px; left: 0; right: 0;
+      position: absolute; bottom: 0px; left: 0; right: 0;
       text-align: center;
     }
-    .orb-caption .state {
-      font-family: var(--display); font-weight: 600; font-size: 13px; color: var(--lavender);
-    }
-    .orb-caption .hint {
-      font-family: var(--mono); font-size: 9.5px; color: var(--muted);
-    }
+    .orb-caption .state { font-family: var(--display); font-weight: 600; font-size: 13px; color: var(--lavender); }
+    .orb-caption .hint { font-family: var(--mono); font-size: 9.5px; color: var(--muted); }
 
-    /* Caixa de Diálogo (Chat Scrollável) */
+    /* PILULA DE ESCUTA */
+    .mic-pill {
+      margin: 8px 16px;
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(124,108,246,.12);
+      border: 1px solid rgba(124,108,246,.3);
+      border-radius: 14px;
+      padding: 8px 12px;
+      flex-shrink: 0;
+    }
+    .mic-pill .icon {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: var(--violet);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ink); flex-shrink: 0;
+    }
+    .mic-pill .t small {
+      display: block; font-family: var(--mono); font-size: 8.5px; color: var(--violet);
+      text-transform: uppercase; letter-spacing: .06em;
+    }
+    .mic-pill .t span { font-size: 11px; font-weight: 600; color: var(--lavender); }
+    .switch {
+      margin-left: auto; width: 36px; height: 20px; border-radius: 10px;
+      background: var(--violet); position: relative; cursor: pointer; transition: background 0.3s;
+    }
+    .switch::after {
+      content: ''; position: absolute; top: 2px; right: 2px;
+      width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 0.3s;
+    }
+    .switch.desligado { background: #485460; }
+    .switch.desligado::after { transform: translateX(-16px); }
+
+    /* BOTÕES DE ATALHO */
+    .home-shortcuts {
+      display: flex; justify-content: center; gap: 12px;
+      padding: 4px 16px 8px;
+      flex-shrink: 0;
+    }
+    .shortcut {
+      width: 44px; height: 44px; border-radius: 14px;
+      background: rgba(243,240,255,.06);
+      border: 1px solid rgba(243,240,255,.1);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--lavender); cursor: pointer; transition: all 0.2s;
+    }
+    .shortcut:hover { background: var(--violet); color: var(--ink); transform: translateY(-2px); }
+
+    /* CAIXA DE CHAT */
     .chat-box {
       flex: 1;
       background: rgba(11, 9, 22, 0.6);
       border-top: 1px solid rgba(243,240,255,.08);
       border-bottom: 1px solid rgba(243,240,255,.08);
-      padding: 12px 16px;
+      padding: 10px 14px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .msg {
-      padding: 10px 12px;
-      border-radius: 14px;
-      max-width: 90%;
-      word-wrap: break-word;
-    }
-    .msg-user {
-      align-self: flex-end;
-      background: var(--surface-2);
-      border: 1px solid rgba(124,108,246,.3);
-      color: var(--lavender);
-    }
-    .msg-ia {
-      align-self: flex-start;
-      background: var(--surface);
-      border: 1px solid rgba(243,240,255,.1);
-      color: var(--lavender);
-    }
-    .msg-sistema {
-      align-self: center;
-      background: rgba(255,177,60,.1);
-      border: 1px solid rgba(255,177,60,.2);
-      color: var(--amber);
-      font-family: var(--mono);
-      font-size: 10px;
-      text-align: center;
-    }
-
-    /* Barra de Entrada de Texto */
-    .input-section {
-      padding: 10px 14px;
-      background: var(--surface);
-      display: flex;
       gap: 8px;
-      align-items: center;
-      flex-shrink: 0;
+      font-size: 11.5px;
+      line-height: 1.4;
     }
 
+    .msg { padding: 8px 11px; border-radius: 12px; max-width: 90%; word-wrap: break-word; }
+    .msg-user { align-self: flex-end; background: var(--surface-2); border: 1px solid rgba(124,108,246,.3); color: var(--lavender); }
+    .msg-ia { align-self: flex-start; background: var(--surface); border: 1px solid rgba(243,240,255,.1); color: var(--lavender); }
+    .msg-sistema { align-self: center; background: rgba(255,177,60,.1); border: 1px solid rgba(255,177,60,.2); color: var(--amber); font-family: var(--mono); font-size: 9.5px; text-align: center; }
+
+    /* ENTRADA DE TEXTO E BOTÃO ENVIAR */
+    .input-section {
+      padding: 8px 12px;
+      background: var(--surface);
+      display: flex; gap: 8px; align-items: center; flex-shrink: 0;
+    }
     .input-section textarea {
-      flex: 1;
-      background: rgba(18, 14, 35, 0.8);
-      border: 1px solid rgba(124,108,246,.3);
-      border-radius: 12px;
-      padding: 10px;
-      color: #fff;
-      font-family: var(--body);
-      font-size: 12px;
-      outline: none;
-      resize: none;
-      height: 42px;
+      flex: 1; background: rgba(18, 14, 35, 0.8);
+      border: 1px solid rgba(124,108,246,.3); border-radius: 10px;
+      padding: 8px 10px; color: #fff; font-family: var(--body); font-size: 11.5px;
+      outline: none; resize: none; height: 38px;
     }
-
     .btn-send {
-      width: 42px; height: 42px;
-      background: var(--violet);
-      border: none;
-      border-radius: 12px;
-      color: var(--ink);
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      flex-shrink: 0;
+      width: 38px; height: 38px; background: var(--violet); border: none;
+      border-radius: 10px; color: var(--ink); display: flex; align-items: center;
+      justify-content: center; cursor: pointer; flex-shrink: 0;
       transition: background 0.2s;
     }
-    .btn-send:hover { background: var(--violet-soft); color: #fff; }
+    .btn-send:active {
+      transform: scale(0.95);
+    }
 
-    /* Barra Inferior de Métricas */
     .mem-footer {
-      padding: 6px 16px 12px;
-      background: var(--bg-deep);
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--muted);
-      display: flex;
-      justify-content: space-between;
-      flex-shrink: 0;
+      padding: 6px 14px 10px; background: var(--bg-deep);
+      font-family: var(--mono); font-size: 8.5px; color: var(--muted);
+      display: flex; justify-content: space-between; flex-shrink: 0;
     }
   </style>
 </head>
@@ -269,23 +263,51 @@
 
     <!-- Orbe Visual -->
     <div class="orb-stage">
-      <div class="ring r2" id="ring2"></div>
-      <div class="ring r1" id="ring1"></div>
-      <div class="orb" id="orb"></div>
+      <div class="ring r2"></div>
+      <div class="ring r1"></div>
+      <div class="orb" id="orb" onclick="falarComOrbe()"></div>
       <div class="orb-caption">
         <div class="state" id="orbState">Pronta</div>
-        <div class="hint" id="orbHint">digita ou conversa abaixo</div>
+        <div class="hint" id="orbHint">toca no orbe ou digita abaixo</div>
       </div>
     </div>
 
-    <!-- Caixa de Conversa -->
+    <!-- Pílula de Escuta -->
+    <div class="mic-pill">
+      <div class="icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 19v3"/></svg>
+      </div>
+      <div class="t">
+        <small id="statusEscutaRotulo">Escuta Contínua</small>
+        <span id="statusEscutaTexto">Ativa — Nyore pronta para responder</span>
+      </div>
+      <div class="switch" id="switchMic" onclick="alternarEscuta()"></div>
+    </div>
+
+    <!-- ATALHOS FUNCIONAIS -->
+    <div class="home-shortcuts">
+      <div class="shortcut" onclick="acaoHistorico()" title="Histórico da Sessão">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+      </div>
+      <div class="shortcut" onclick="acaoVerBibliotecas()" title="Biblioteca de Conhecimento">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+      </div>
+      <div class="shortcut" onclick="acaoLembretes()" title="Lembretes">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      </div>
+      <div class="shortcut" onclick="acaoPesquisaDireta()" title="Pesquisar na Web">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+      </div>
+    </div>
+
+    <!-- Caixa de Chat -->
     <div class="chat-box" id="chatBox"></div>
 
-    <!-- Painel de Input -->
+    <!-- Entrada de Texto com ID explícito no botão -->
     <div class="input-section">
       <textarea id="userInput" placeholder="Pergunta algo ou ensina com: ensinar [x] = [y]" onkeydown="checarEnter(event)"></textarea>
-      <button class="btn-send" onclick="processarMensagem()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      <button class="btn-send" id="btnEnviarMsg" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
       </button>
     </div>
 
@@ -303,12 +325,17 @@
   const orbHint = document.getElementById('orbHint');
   const chatBox = document.getElementById('chatBox');
   const userInput = document.getElementById('userInput');
+  const btnEnviarMsg = document.getElementById('btnEnviarMsg');
   const saudacao = document.getElementById('saudacao');
   const relogio = document.getElementById('relogio');
   const infoCategorias = document.getElementById('infoCategorias');
   const infoItens = document.getElementById('infoItens');
+  const switchMic = document.getElementById('switchMic');
+  const statusEscutaTexto = document.getElementById('statusEscutaTexto');
 
-  // BIBLIOTECAS AMPLIADAS DE CONHECIMENTO BASE
+  let escutaAtiva = true;
+
+  // BASE DE DADOS LOCAL E CATEGORIAS
   let bibliotecas = JSON.parse(localStorage.getItem('nyore_bibliotecas')) || {
     "Gerais": {
       "olá": "Olá! Como posso ajudar nos teus estudos e tarefas hoje?",
@@ -316,34 +343,33 @@
       "tudo bem": "Tudo ótimo por aqui! Pronta para trabalhar."
     },
     "Informática de Gestão": {
-      "o que é sistema de informação": "É um conjunto organizado de elementos (pessoas, dados, processos e tecnologia) que recolhe, processa, armazena e distribui informação para apoiar a tomada de decisões numa organização.",
-      "o que é banco de dados": "É uma coleção organizada de dados estruturados, armazenados eletronicamente, permitindo acesso, manipulação e atualização rápida via SQL.",
-      "o que é erp": "ERP (Enterprise Resource Planning) é um software de gestão empresarial que integra todos os departamentos de uma empresa num único sistema."
+      "o que é sistema de informação": "É um conjunto organizado de elementos (pessoas, dados, processos e tecnologia) que recolhe, processa, armazena e distribui informação para apoiar a tomada de decisões.",
+      "o que é banco de dados": "É uma coleção organizada de dados estruturados, armazenados eletronicamente, permitindo acesso e consulta rápida.",
+      "o que é erp": "ERP (Enterprise Resource Planning) é um software de gestão empresarial que integra todos os departamentos de uma empresa."
     },
     "Programação": {
       "o que é html": "HTML (HyperText Markup Language) é a linguagem de marcação padrão para criar e estruturar páginas na web.",
-      "o que é python": "Python é uma linguagem de programação de alto nível, interpretada, de sintaxe simples e muito utilizada em IA, automação e desenvolvimento web.",
-      "o que é c sharp": "C# é uma linguagem de programação orientada a objetos desenvolvida pela Microsoft, amplamente utilizada no desenvolvimento de aplicações desktop, web e jogos."
+      "o que é python": "Python é uma linguagem de programação de alto nível, interpretada, de sintaxe simples e muito utilizada em IA e automação.",
+      "o que é c sharp": "C# é uma linguagem de programação orientada a objetos desenvolvida pela Microsoft, muito usada para software desktop e jogos."
     },
     "Redes de Computadores": {
-      "o que é endereço ip": "É um identificador numérico único atribuído a cada dispositivo ligado a uma rede de computadores que utiliza o protocolo IP para comunicação.",
-      "o que é router": "Um router (ou roteador) é um dispositivo de rede que encaminha pacotes de dados entre diferentes redes de computadores.",
-      "o que é modelo osi": "É um modelo de referência de 7 camadas que padroniza as funções de um sistema de comunicação ou rede de computadores."
+      "o que é endereço ip": "É um identificador numérico único atribuído a cada dispositivo ligado a uma rede de computadores.",
+      "o que é router": "Um router é um dispositivo de rede que encaminha pacotes de dados entre diferentes redes de computadores."
     },
     "História e Geografia de Angola": {
       "quando foi a independência de angola": "Angola proclamou a sua independência a 11 de Novembro de 1975.",
-      "qual é a capital de angola": "A capital de Angola é Luanda.",
-      "quem foi o primeiro presidente de angola": "O primeiro Presidente de Angola foi o Dr. António Agostinho Neto."
-    },
-    "Gírias e Expressões": {
-      "o que significa kumbu": "Kumbu é uma gíria angolana para dinheiro.",
-      "o que significa mboa": "Mboa é uma expressão informal usada para referir a uma namorada ou rapariga.",
-      "o que significa kota": "Kota é um termo de respeito utilizado para se referir a uma pessoa mais velha ou com maior experiência."
+      "qual é a capital de angola": "A capital de Angola é Luanda."
     }
   };
 
   let nomeUsuario = localStorage.getItem('nyore_nome_usuario') || "";
   let aguardandoNome = false;
+
+  // REGISTO DIRETO DO EVENTO DE CLIQUE DO BOTÃO ENVIAR
+  btnEnviarMsg.addEventListener('click', function(e) {
+    e.preventDefault();
+    processarMensagem();
+  });
 
   // INICIALIZAÇÃO
   atualizarRelogio();
@@ -370,6 +396,51 @@
     } else {
       adicionarMsgIA(`Olá, ${nomeUsuario}! Como posso ajudar nos teus estudos hoje?`);
     }
+  }
+
+  function alternarEscuta() {
+    escutaAtiva = !escutaAtiva;
+    if (escutaAtiva) {
+      switchMic.classList.remove('desligado');
+      statusEscutaTexto.innerText = "Ativa — Nyore pronta para responder";
+      definirEstado("Pronta", "falando", "escuta ativa");
+    } else {
+      switchMic.classList.add('desligado');
+      statusEscutaTexto.innerText = "Pausada — Clique para reativar";
+      definirEstado("Pausada", "inativo", "escuta desligada");
+    }
+  }
+
+  function falarComOrbe() {
+    if (!escutaAtiva) alternarEscuta();
+    adicionarMsgSistema("Sintonia ativada. Podes digitar a tua pergunta abaixo!");
+  }
+
+  function acaoHistorico() {
+    let totalMsgs = chatBox.children.length;
+    adicionarMsgSistema(`<b>Histórico:</b> Esta sessão possui ${totalMsgs} interações registadas.`);
+  }
+
+  function acaoVerBibliotecas() {
+    let relatorio = "<b>Bibliotecas Ativas na Memória:</b><br>";
+    for (let cat in bibliotecas) {
+      let qtd = Object.keys(bibliotecas[cat]).length;
+      relatorio += `• <b>${cat}:</b> ${qtd} item(ns)<br>`;
+    }
+    adicionarMsgIA(relatorio);
+  }
+
+  function acaoLembretes() {
+    adicionarMsgIA("<b>Lembretes Rápidos:</b><br>1. Rever matérias de prova<br>2. Adicionar novos ensinamentos com '='<br>3. Praticar exercícios de programação");
+  }
+
+  function acaoPesquisaDireta() {
+    const texto = userInput.value.trim();
+    if (!texto) {
+      adicionarMsgSistema("Digita o assunto na caixa de texto e clica na Lupa para pesquisar na Web!");
+      return;
+    }
+    processarMensagem(true);
   }
 
   function checarEnter(e) {
@@ -400,11 +471,10 @@
 
   function categorizarAutomatico(pergunta) {
     const p = pergunta.toLowerCase();
-    if (p.includes("html") || p.includes("python") || p.includes("c#") || p.includes("código") || p.includes("script")) return "Programação";
-    if (p.includes("ip") || p.includes("router") || p.includes("rede") || p.includes("switch") || p.includes("osi")) return "Redes de Computadores";
-    if (p.includes("gestão") || p.includes("dados") || p.includes("erp") || p.includes("sistema")) return "Informática de Gestão";
-    if (p.includes("angola") || p.includes("luanda") || p.includes("presidente") || p.includes("independência")) return "História e Geografia de Angola";
-    if (p.includes("kumbu") || p.includes("mboa") || p.includes("kota") || p.includes("camba")) return "Gírias e Expressões";
+    if (p.includes("html") || p.includes("python") || p.includes("c#") || p.includes("código")) return "Programação";
+    if (p.includes("ip") || p.includes("router") || p.includes("rede")) return "Redes de Computadores";
+    if (p.includes("gestão") || p.includes("dados") || p.includes("erp")) return "Informática de Gestão";
+    if (p.includes("angola") || p.includes("luanda") || p.includes("independência")) return "História e Geografia de Angola";
     return "Conhecimento Geral";
   }
 
@@ -429,7 +499,7 @@
     orbHint.innerText = dica;
   }
 
-  async function processarMensagem() {
+  async function processarMensagem(forcarWeb = false) {
     const textoOriginal = userInput.value.trim();
     if (!textoOriginal) return;
 
@@ -450,122 +520,5 @@
 
     const chaveBusca = normalizarTexto(textoOriginal);
 
-    // APRENDIZADO DIRETO
-    if (textoOriginal.toLowerCase().includes("ensinar ") || textoOriginal.includes("=")) {
-      let linhas = textoOriginal.split(/\n|;/);
-      let aprendidos = 0;
-
-      linhas.forEach(linha => {
-        let posEnsinar = linha.toLowerCase().indexOf("ensinar ");
-        let textoTratado = posEnsinar !== -1 ? linha.substring(posEnsinar + 8) : linha;
-        let partes = textoTratado.split("=");
-
-        if (partes.length === 2) {
-          let pergunta = normalizarTexto(partes[0]);
-          let resposta = partes[1].trim();
-          let categoria = categorizarAutomatico(pergunta);
-
-          if (!bibliotecas[categoria]) bibliotecas[categoria] = {};
-          bibliotecas[categoria][pergunta] = resposta;
-          aprendidos++;
-        }
-      });
-
-      if (aprendidos > 0) {
-        salvarBibliotecas();
-        setTimeout(() => {
-          definirEstado("Aprendeu!", "aprendendo", "novo conhecimento guardado");
-          adicionarMsgSistema(`Adicionei ${aprendidos} novo(s) tópico(s) às bibliotecas.`);
-        }, 400);
-        return;
-      }
-    }
-
-    // 1º PASSO: BUSCA INTERNA NAS BIBLIOTECAS
-    let resultadoLocal = buscarNasBibliotecas(chaveBusca);
-
-    if (resultadoLocal) {
-      setTimeout(() => {
-        definirEstado("Pronta", "falando", "resposta interna");
-        adicionarMsgIA(resultadoLocal);
-      }, 300);
-    } else {
-      // 2º PASSO: CONSULTA EXTERNA E REFORMULAÇÃO NATURAL
-      definirEstado("A consultar...", "pesquisando", "a sintetizar conhecimento");
-      adicionarMsgSistema("A procurar a melhor resposta...");
-
-      let respostaSintetizada = await pesquisarESintetizar(textoOriginal);
-
-      if (respostaSintetizada) {
-        definirEstado("Pronta", "falando", "resposta articulada");
-        adicionarMsgIA(respostaSintetizada);
-      } else {
-        definirEstado("Aprender", "aprendendo", "submete uma definição");
-        adicionarMsgIA(`Não encontrei dados suficientes sobre isso no momento. Podes me ensinar usando: ensinar ${textoOriginal} = [explicação]`);
-      }
-    }
-  }
-
-  function buscarNasBibliotecas(textoUsuario) {
-    const palavrasUsuario = textoUsuario.split(" ").filter(p => p.length > 2);
-    let melhorResposta = null;
-    let maiorPontuacao = 0;
-
-    for (let categoria in bibliotecas) {
-      let banco = bibliotecas[categoria];
-      for (let perguntaSalva in banco) {
-        let pontuacao = 0;
-
-        if (textoUsuario === perguntaSalva) return banco[perguntaSalva];
-
-        palavrasUsuario.forEach(palavra => {
-          if (perguntaSalva.includes(palavra)) pontuacao += 2;
-        });
-
-        if (pontuacao > maiorPontuacao && pontuacao >= 2) {
-          maiorPontuacao = pontuacao;
-          melhorResposta = banco[perguntaSalva];
-        }
-      }
-    }
-    return melhorResposta;
-  }
-
-  // PESQUISA E FORMATAÇÃO NATURAL (SEM FRASES DE BUSCA BRUTA)
-  async function pesquisarESintetizar(termo) {
-    try {
-      // Tenta recuperar resumo da Wikipedia em Português
-      const urlWiki = `https://pt.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(termo)}`;
-      const respWiki = await fetch(urlWiki);
-      if (respWiki.ok) {
-        const dadosWiki = await respWiki.json();
-        if (dadosWiki.extract) {
-          return formatarRespostaNativa(dadosWiki.extract);
-        }
-      }
-
-      // Alternativa via DuckDuckGo Instant Answer API
-      const urlDDG = `https://api.duckduckgo.com/?q=${encodeURIComponent(termo)}&format=json&kl=pt-pt&no_html=1`;
-      const respDDG = await fetch(urlDDG);
-      if (respDDG.ok) {
-        const dadosDDG = await respDDG.json();
-        if (dadosDDG.AbstractText) {
-          return formatarRespostaNativa(dadosDDG.AbstractText);
-        } else if (dadosDDG.RelatedTopics && dadosDDG.RelatedTopics.length > 0 && dadosDDG.RelatedTopics[0].Text) {
-          return formatarRespostaNativa(dadosDDG.RelatedTopics[0].Text);
-        }
-      }
-
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  function formatarRespostaNativa(textoBruto) {
-    // Remove marcadores técnicos ou pontuações excessivas
-    let limpo = textoBruto.replace(/\[\d+\]/g, "").trim();
-    
-    // Assegura que a IA responde com autoridade e fluidez
-    if (!limpo.endsWith(".")) limpo += ".";
- 
+    // MODO ENSINAR
+          
