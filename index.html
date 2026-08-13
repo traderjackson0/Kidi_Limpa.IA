@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NYORE.IA</title>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
@@ -23,7 +22,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            -webkit-tap-highlight-color: transparent;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
         }
 
         html, body {
@@ -33,6 +32,7 @@
             background-color: var(--bg-primary);
             color: var(--text-main);
             overflow: hidden;
+            touch-action: manipulation;
         }
 
         #app-container {
@@ -68,7 +68,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 6px;
+            padding: 10px;
+            z-index: 20;
         }
 
         .brand-title {
@@ -88,7 +89,7 @@
             height: 100%;
             background: var(--bg-secondary);
             border-right: 1px solid var(--border-color);
-            z-index: 100;
+            z-index: 1000;
             display: flex;
             flex-direction: column;
             padding: 16px;
@@ -103,7 +104,7 @@
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.6);
-            z-index: 90;
+            z-index: 900;
             display: none;
         }
 
@@ -167,6 +168,7 @@
             flex-direction: column;
             height: calc(100% - 56px);
             position: relative;
+            z-index: 1;
         }
 
         .view-panel {
@@ -221,6 +223,7 @@
             display: flex;
             gap: 8px;
             align-items: center;
+            z-index: 10;
         }
 
         .input-bar input {
@@ -235,13 +238,14 @@
         }
 
         .input-bar button {
-            padding: 10px 16px;
+            padding: 12px 20px;
             background: var(--accent-blue);
             border: none;
             border-radius: 20px;
             color: white;
             font-weight: bold;
             cursor: pointer;
+            user-select: none;
         }
 
         .calc-wrapper {
@@ -290,11 +294,11 @@
 <body>
 
     <div id="app-container">
-        <div id="overlayMenu" class="overlay-menu" onclick="toggleMenu()"></div>
+        <div id="overlayMenu" class="overlay-menu" onclick="toggleMenu()" ontouchstart="toggleMenu()"></div>
 
         <header>
             <div class="header-left">
-                <button class="menu-btn" onclick="toggleMenu()">
+                <button class="menu-btn" id="btnMenu" onclick="toggleMenu()" ontouchstart="toggleMenu(event)">
                     <i data-lucide="menu"></i>
                 </button>
                 <div class="brand-title">
@@ -310,10 +314,10 @@
             </div>
 
             <div class="nav-menu">
-                <button class="nav-btn active" onclick="mudarAba('chat', this)">
+                <button class="nav-btn active" onclick="mudarAba('chat', this)" ontouchstart="mudarAba('chat', this)">
                     <i data-lucide="message-square"></i> Chat Principal
                 </button>
-                <button class="nav-btn" onclick="mudarAba('calc', this)">
+                <button class="nav-btn" onclick="mudarAba('calc', this)" ontouchstart="mudarAba('calc', this)">
                     <i data-lucide="calculator"></i> Calculadora
                 </button>
             </div>
@@ -323,7 +327,7 @@
                 <div id="history-list"></div>
             </div>
 
-            <button class="nav-btn" style="color: var(--accent-blue);" onclick="novaConversa()">
+            <button class="nav-btn" style="color: var(--accent-blue);" onclick="novaConversa()" ontouchstart="novaConversa()">
                 <i data-lucide="plus-circle"></i> Nova Conversa
             </button>
         </sidebar>
@@ -332,12 +336,12 @@
             <div id="view-chat" class="view-panel active">
                 <div id="chat-container">
                     <div class="msg bot-msg">
-                        Sistemas operacionais, Chefão! Mente atualizada e sem bugs. Podes ensinar-me conceitos ou mapear respostas diretas!
+                        Sistemas operacionais, Chefão! Painel pronto e botões ativados para toque.
                     </div>
                 </div>
                 <div class="input-bar">
                     <input type="text" id="chatInput" placeholder="Digita a tua mensagem..." onkeypress="handleKey(event)">
-                    <button onclick="enviar()">ENVIAR</button>
+                    <button type="button" id="btnEnviar" onclick="enviar()" ontouchstart="enviar(event)">ENVIAR</button>
                 </div>
             </div>
 
@@ -345,22 +349,22 @@
                 <div class="calc-wrapper">
                     <input type="text" id="calcDisplay" class="calc-display" readonly>
                     <div class="calc-grid">
-                        <button class="calc-btn" onclick="calcClear()">C</button>
-                        <button class="calc-btn op" onclick="calcAppend('/')">/</button>
-                        <button class="calc-btn op" onclick="calcAppend('*')">*</button>
-                        <button class="calc-btn op" onclick="calcAppend('-')">-</button>
-                        <button class="calc-btn" onclick="calcAppend('7')">7</button>
-                        <button class="calc-btn" onclick="calcAppend('8')">8</button>
-                        <button class="calc-btn" onclick="calcAppend('9')">9</button>
-                        <button class="calc-btn op" onclick="calcAppend('+')">+</button>
-                        <button class="calc-btn" onclick="calcAppend('4')">4</button>
-                        <button class="calc-btn" onclick="calcAppend('5')">5</button>
-                        <button class="calc-btn" onclick="calcAppend('6')">6</button>
-                        <button class="calc-btn op" onclick="calcEval()">=</button>
-                        <button class="calc-btn" onclick="calcAppend('1')">1</button>
-                        <button class="calc-btn" onclick="calcAppend('2')">2</button>
-                        <button class="calc-btn" onclick="calcAppend('3')">3</button>
-                        <button class="calc-btn" onclick="calcAppend('0')">0</button>
+                        <button class="calc-btn" onclick="calcClear()" ontouchstart="calcClear()">C</button>
+                        <button class="calc-btn op" onclick="calcAppend('/')" ontouchstart="calcAppend('/')">/</button>
+                        <button class="calc-btn op" onclick="calcAppend('*')" ontouchstart="calcAppend('*')">*</button>
+                        <button class="calc-btn op" onclick="calcAppend('-')" ontouchstart="calcAppend('-')">-</button>
+                        <button class="calc-btn" onclick="calcAppend('7')" ontouchstart="calcAppend('7')">7</button>
+                        <button class="calc-btn" onclick="calcAppend('8')" ontouchstart="calcAppend('8')">8</button>
+                        <button class="calc-btn" onclick="calcAppend('9')" ontouchstart="calcAppend('9')">9</button>
+                        <button class="calc-btn op" onclick="calcAppend('+')" ontouchstart="calcAppend('+')">+</button>
+                        <button class="calc-btn" onclick="calcAppend('4')" ontouchstart="calcAppend('4')">4</button>
+                        <button class="calc-btn" onclick="calcAppend('5')" ontouchstart="calcAppend('5')">5</button>
+                        <button class="calc-btn" onclick="calcAppend('6')" ontouchstart="calcAppend('6')">6</button>
+                        <button class="calc-btn op" onclick="calcEval()" ontouchstart="calcEval()">=</button>
+                        <button class="calc-btn" onclick="calcAppend('1')" ontouchstart="calcAppend('1')">1</button>
+                        <button class="calc-btn" onclick="calcAppend('2')" ontouchstart="calcAppend('2')">2</button>
+                        <button class="calc-btn" onclick="calcAppend('3')" ontouchstart="calcAppend('3')">3</button>
+                        <button class="calc-btn" onclick="calcAppend('0')" ontouchstart="calcAppend('0')">0</button>
                     </div>
                 </div>
             </div>
@@ -368,16 +372,12 @@
     </div>
 
     <script>
-        /* =========================================================
-           CÉREBRO REPARADO & UNIFICADO DA NYORE.IA
-           ========================================================= */
         class CerebroNyore {
             constructor() {
                 this.prefixoTopico = "nyore_topico_";
                 this.prefixoPerguntDirect = "nyore_qa_";
             }
 
-            // Normalização inteligente: Remove aspas, pontuações estranhas e acentos
             limpar(str) {
                 if (!str) return "";
                 return str.toLowerCase()
@@ -387,7 +387,6 @@
                           .trim();
             }
 
-            // 1. Guardar Tópico Geral
             salvarTopico(topico, conteudo) {
                 const chave = this.limpar(topico);
                 if (!chave) return "Não consegui entender o tópico, Chefão.";
@@ -395,7 +394,6 @@
                 return `Entendido, Chefão! Guardei na memória tudo sobre **${topico.toUpperCase().trim()}**.`;
             }
 
-            // 2. NOVO MÉTODO: Mapear Pergunta para Resposta Direta
             salvarPerguntaResposta(pergunta, resposta) {
                 const chave = this.limpar(pergunta);
                 if (!chave) return "Não entendi a pergunta, Chefão.";
@@ -403,26 +401,22 @@
                 return `Mapeamento concluído, Chefão! Quando me perguntares *"${pergunta.trim()}"*, vou responder exatamente: **"${resposta.trim()}"**.`;
             }
 
-            // Buscar Tópico
             buscarTopico(termo) {
                 const chave = this.limpar(termo);
                 return localStorage.getItem(this.prefixoTopico + chave);
             }
 
-            // Buscar Pergunta Direta
             buscarPerguntaDireta(pergunta) {
                 const chave = this.limpar(pergunta);
                 return localStorage.getItem(this.prefixoPerguntDirect + chave);
             }
 
-            // Processador Principal da IA
             processar(textoOriginal) {
                 if (!textoOriginal || !textoOriginal.trim()) return null;
 
                 const raw = textoOriginal.trim();
                 const t = this.limpar(raw);
 
-                // --- A. NOVO MÉTODO DE ENSINO: "Quando eu perguntar [P], responde [R]" ---
                 if (t.includes("quando eu perguntar") || t.includes("se eu perguntar")) {
                     let partes = raw.split(/responde|responda/i);
                     if (partes.length >= 2) {
@@ -432,7 +426,6 @@
                     }
                 }
 
-                // --- B. MÉTODO ANTIGO DE ENSINO: "Nyore, aprende que [Tópico]: [Conteúdo]" ---
                 if (t.includes("aprende") || t.includes("guarda isto") || t.includes("aprende isto")) {
                     let partes = raw.split(":");
                     if (partes.length >= 2) {
@@ -440,21 +433,16 @@
                         let conteudo = partes.slice(1).join(":").trim();
                         return this.salvarTopico(topico, conteudo);
                     } else {
-                        // Se colou frase corrida sem dois pontos (ex: "Nyore aprende que Angola é um país...")
                         let extraido = raw.replace(/(nyore|aprende|isto|que|aprenda)/gi, "").trim();
                         let palavras = extraido.split(" ");
-                        let topico = palavras[0]; // Primeira palavra vira a chave
+                        let topico = palavras[0];
                         return this.salvarTopico(topico, extraido);
                     }
                 }
 
-                // --- C. CONSULTA MÁXIMA (Respostas Mapeadas & Perguntas Naturais) ---
-
-                // 1. Tenta resposta direta configurada pelo usuário
                 let respostaMapeada = this.buscarPerguntaDireta(t);
                 if (respostaMapeada) return respostaMapeada;
 
-                // 2. Extrai termos de perguntas comuns
                 const padroesPerguntas = [
                     "oque e", "oq e", "o que e", "quem e", "quais sao", 
                     "como sao", "quando", "fala sobre", "me diz sobre", "explica sobre", "explica"
@@ -467,22 +455,18 @@
                     }
                 });
 
-                // Se tinha ponto de interrogação ou palavra-chave de busca
                 termoExtraido = termoExtraido.replace(/(nyore|\?)/g, "").trim();
 
-                // Busca o tópico limpo
                 let resultadoMemoria = this.buscarTopico(termoExtraido);
                 if (resultadoMemoria) {
                     return `📚 **Memória sobre ${termoExtraido.toUpperCase()}:**\n${resultadoMemoria}`;
                 }
 
-                // Se buscou apenas o termo solto (ex: "Angola")
                 let buscaDiretaApenasTermo = this.buscarTopico(t.replace("nyore", "").trim());
                 if (buscaDiretaApenasTermo) {
                     return `📚 **Memória sobre ${t.toUpperCase().replace("NYORE", "").trim()}:**\n${buscaDiretaApenasTermo}`;
                 }
 
-                // --- D. SAUDAÇÕES E DIÁLOGOS ---
                 if (["ola", "oi", "viva", "tudo bem", "boas"].some(g => t.includes(g))) {
                     return "Sistemas operacionais, Chefão! Em que posso ajudar a avançar agora?";
                 }
@@ -491,12 +475,11 @@
                     return "Tamo junto, Chefão! Sempre às ordens.";
                 }
 
-                // Fallback amigável de tópico não encontrado
                 if (padroesPerguntas.some(p => t.includes(p)) || t.endsWith("?")) {
-                    return `Ainda não tenho essa informação sobre **${termoExtraido || raw}** na minha base, Chefão. Podes ensinar-me dizendo: *"Nyore, aprende que ${termoExtraido || 'tópico'}: [explicação]"* ou *"Quando eu perguntar ${raw}, responde [sua resposta]"*!`;
+                    return `Ainda não tenho essa informação sobre **${termoExtraido || raw}** na minha base, Chefão. Podes ensinar-me dizendo: *"Nyore, aprende que ${termoExtraido || 'tópico'}: [explicação]"*!`;
                 }
 
-                return "Compreendido, Chefão! Acompanhando a conversa. Caso queiras que eu guarde algo, é só avisar!";
+                return "Compreendido, Chefão! Acompanhando a conversa.";
             }
         }
 
@@ -504,7 +487,8 @@
 
         window.onload = () => { lucide.createIcons(); };
 
-        function toggleMenu() {
+        function toggleMenu(e) {
+            if (e && e.type === 'touchstart') e.preventDefault();
             document.getElementById("sideMenu").classList.toggle("open");
             document.getElementById("overlayMenu").classList.toggle("active");
         }
@@ -514,7 +498,8 @@
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`view-${aba}`).classList.add('active');
             btn.classList.add('active');
-            toggleMenu();
+            document.getElementById("sideMenu").classList.remove("open");
+            document.getElementById("overlayMenu").classList.remove("active");
         }
 
         let historico = JSON.parse(localStorage.getItem("nyore_hist")) || [];
@@ -528,7 +513,8 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        function enviar() {
+        function enviar(e) {
+            if (e && e.type === 'touchstart') e.preventDefault();
             const input = document.getElementById("chatInput");
             const texto = input.value;
             if (!texto.trim()) return;
@@ -544,8 +530,17 @@
 
             const resposta = cerebro.processar(texto);
             if (resposta) {
-                setTimeout(() => adicionarMensagem("Nyore", resposta), 250);
+                setTimeout(() => adicionarMensagem("Nyore", resposta), 200);
             }
         }
 
-        function handleK
+        function handleKey(e) { if (e.key === 'Enter') enviar(); }
+
+        function renderHistorico() {
+            const list = document.getElementById("history-list");
+            list.innerHTML = "";
+            historico.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "history-item";
+                div.innerText = item;
+          
