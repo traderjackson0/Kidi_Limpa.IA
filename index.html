@@ -1,566 +1,4679 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NYORE.IA</title>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        :root {
-            --bg-primary: #090c10;
-            --bg-secondary: #131924;
-            --bg-card: #1c2536;
-            --accent-blue: #0088ff;
-            --accent-cyan: #00d2ff;
-            --text-main: #f0f4f8;
-            --text-muted: #8a99ad;
-            --border-color: #243047;
-        }
+<meta charset="UTF-8">
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+<meta
+    name="viewport"
+    content="width=device-width,
+             initial-scale=1.0,
+             maximum-scale=1.0,
+             user-scalable=no"
+>
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            height: 100dvh;
-            background-color: var(--bg-primary);
-            color: var(--text-main);
-            overflow: hidden;
-        }
+<meta name="theme-color" content="#090c10">
 
-        #app-container {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
+<title>NYORE.IA</title>
 
-        header {
-            height: 56px;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 16px;
-            z-index: 10;
-        }
+<!--
+    O Lucide é apenas visual.
+    A aplicação NÃO depende dele para funcionar.
+-->
+<script
+    src="https://unpkg.com/lucide@latest"
+    defer>
+</script>
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+<style>
 
-        .menu-btn {
-            background: none;
-            border: none;
-            color: var(--text-main);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px;
-        }
+/* ============================================================
+   NYORE.IA V4
+   SISTEMA VISUAL
+============================================================ */
 
-        .brand-title {
-            color: var(--accent-cyan);
-            font-weight: bold;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+:root{
 
-        /* SIDEBAR DESLIZANTE */
-        sidebar {
-            position: absolute;
-            top: 0;
-            left: -280px;
-            width: 280px;
-            height: 100%;
-            background: var(--bg-secondary);
-            border-right: 1px solid var(--border-color);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            padding: 16px;
-            gap: 16px;
-            transition: left 0.25s ease-out;
-            box-shadow: 5px 0 15px rgba(0,0,0,0.5);
-        }
+    --bg-primary:#090c10;
+    --bg-secondary:#131924;
+    --bg-card:#1c2536;
+    --bg-hover:#243047;
 
-        sidebar.open { left: 0; }
+    --accent-blue:#0088ff;
+    --accent-cyan:#00d2ff;
+    --accent-green:#00e676;
+    --accent-red:#ff4d67;
+    --accent-yellow:#ffd740;
 
-        .overlay-menu {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 900;
-            display: none;
-        }
+    --text-main:#f0f4f8;
+    --text-muted:#8a99ad;
 
-        .overlay-menu.active { display: block; }
+    --border-color:#243047;
 
-        .nav-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
+    --header-height:58px;
 
-        .nav-btn {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            border-radius: 8px;
-            font-size: 0.95rem;
-            cursor: pointer;
-            text-align: left;
-        }
+    --radius-small:9px;
+    --radius-medium:14px;
+    --radius-large:18px;
+}
 
-        .nav-btn.active, .nav-btn:hover {
-            background: var(--bg-card);
-            color: var(--accent-cyan);
-        }
 
-        .history-section {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
+/* RESET */
 
-        .history-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-        }
+*{
 
-        .history-item {
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            color: var(--text-main);
-            background: var(--bg-primary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            border: 1px solid var(--border-color);
-        }
+    box-sizing:border-box;
 
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            height: calc(100% - 56px);
-            position: relative;
-        }
+    margin:0;
+    padding:0;
 
-        .view-panel {
-            display: none;
-            flex: 1;
-            height: 100%;
-            overflow: hidden;
-        }
+    font-family:
+        "Segoe UI",
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        sans-serif;
 
-        .view-panel.active {
-            display: flex;
-            flex-direction: column;
-        }
+    -webkit-tap-highlight-color:transparent;
+}
 
-        #chat-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
 
-        .msg {
-            max-width: 85%;
-            padding: 12px 16px;
-            border-radius: 14px;
-            font-size: 0.95rem;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
+html,
+body{
 
-        .user-msg {
-            align-self: flex-end;
-            background: var(--accent-blue);
-            color: #fff;
-            border-bottom-right-radius: 2px;
-        }
+    width:100%;
+    height:100%;
+    height:100dvh;
 
-        .bot-msg {
-            align-self: flex-start;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            border-bottom-left-radius: 2px;
-        }
+    overflow:hidden;
 
-        .input-bar {
-            padding: 10px 12px;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
+    background:
+        radial-gradient(
+            circle at top,
+            #101827 0%,
+            var(--bg-primary) 45%
+        );
 
-        .input-bar input {
-            flex: 1;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 10px 16px;
-            color: white;
-            outline: none;
-            font-size: 0.95rem;
-        }
+    color:var(--text-main);
 
-        .input-bar button {
-            padding: 12px 20px;
-            background: var(--accent-blue);
-            border: none;
-            border-radius: 20px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
+}
 
-        .calc-wrapper {
-            margin: auto;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            padding: 16px;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 320px;
-        }
 
-        .calc-display {
-            width: 100%;
-            height: 48px;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--accent-cyan);
-            font-size: 1.4rem;
-            text-align: right;
-            padding: 8px;
-            margin-bottom: 12px;
-            outline: none;
-        }
+button,
+input{
 
-        .calc-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-        }
+    font:inherit;
 
-        .calc-btn {
-            padding: 14px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: white;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-        }
+}
 
-        .calc-btn.op { color: var(--accent-cyan); }
-    </style>
+
+button{
+
+    border:0;
+
+    -webkit-user-select:none;
+    user-select:none;
+
+}
+
+
+button:focus-visible,
+input:focus-visible{
+
+    outline:
+        2px solid var(--accent-blue);
+
+    outline-offset:2px;
+
+}
+
+
+/* ============================================================
+   APP
+============================================================ */
+
+#app{
+
+    width:100%;
+    height:100%;
+
+    display:flex;
+    flex-direction:column;
+
+    position:relative;
+
+}
+
+
+/* ============================================================
+   HEADER
+============================================================ */
+
+#header{
+
+    height:var(--header-height);
+    min-height:var(--header-height);
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:
+        0 13px;
+
+    background:
+        rgba(19,25,36,.96);
+
+    border-bottom:
+        1px solid var(--border-color);
+
+    z-index:20;
+
+}
+
+
+.header-left{
+
+    display:flex;
+    align-items:center;
+
+    gap:10px;
+
+}
+
+
+.icon-button{
+
+    width:40px;
+    height:40px;
+
+    border-radius:10px;
+
+    background:transparent;
+
+    color:var(--text-main);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+
+    transition:
+        background .15s,
+        transform .1s;
+
+}
+
+
+.icon-button:hover{
+
+    background:var(--bg-card);
+
+}
+
+
+.icon-button:active{
+
+    transform:scale(.92);
+
+}
+
+
+.brand{
+
+    display:flex;
+    align-items:center;
+
+    gap:7px;
+
+    color:var(--accent-cyan);
+
+    font-size:1.08rem;
+
+    font-weight:800;
+
+    letter-spacing:.2px;
+
+}
+
+
+.status{
+
+    display:flex;
+    align-items:center;
+
+    gap:6px;
+
+    font-size:.72rem;
+
+    color:var(--accent-green);
+
+    font-weight:700;
+
+}
+
+
+.status-dot{
+
+    width:7px;
+    height:7px;
+
+    border-radius:50%;
+
+    background:var(--accent-green);
+
+    box-shadow:
+        0 0 9px
+        var(--accent-green);
+
+    animation:
+        statusPulse 2s infinite;
+
+}
+
+
+@keyframes statusPulse{
+
+    0%,
+    100%{
+
+        opacity:1;
+
+    }
+
+    50%{
+
+        opacity:.35;
+
+    }
+
+}
+
+
+/* ============================================================
+   OVERLAY
+============================================================ */
+
+#menuOverlay{
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+        rgba(0,0,0,.62);
+
+    z-index:80;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    transition:
+        opacity .2s ease;
+
+}
+
+
+#menuOverlay.active{
+
+    opacity:1;
+
+    pointer-events:auto;
+
+}
+
+
+/* ============================================================
+   SIDEBAR
+============================================================ */
+
+#sidebar{
+
+    position:absolute;
+
+    top:0;
+    left:-310px;
+
+    width:290px;
+    height:100%;
+
+    background:var(--bg-secondary);
+
+    border-right:
+        1px solid var(--border-color);
+
+    z-index:100;
+
+    display:flex;
+    flex-direction:column;
+
+    padding:16px;
+
+    gap:14px;
+
+    box-shadow:
+        8px 0 35px
+        rgba(0,0,0,.45);
+
+    transition:
+        left .28s ease;
+
+}
+
+
+#sidebar.open{
+
+    left:0;
+
+}
+
+
+.sidebar-title{
+
+    padding-bottom:14px;
+
+    border-bottom:
+        1px solid var(--border-color);
+
+}
+
+
+.nav-list{
+
+    display:flex;
+    flex-direction:column;
+
+    gap:7px;
+
+}
+
+
+.nav-button{
+
+    width:100%;
+
+    min-height:44px;
+
+    display:flex;
+    align-items:center;
+
+    gap:11px;
+
+    padding:11px 12px;
+
+    border-radius:10px;
+
+    background:transparent;
+
+    color:var(--text-muted);
+
+    cursor:pointer;
+
+    text-align:left;
+
+}
+
+
+.nav-button:hover,
+.nav-button.active{
+
+    background:var(--bg-card);
+
+    color:var(--accent-cyan);
+
+}
+
+
+.history{
+
+    flex:1;
+
+    min-height:0;
+
+    overflow-y:auto;
+
+}
+
+
+.history-title{
+
+    color:var(--text-muted);
+
+    font-size:.7rem;
+
+    text-transform:uppercase;
+
+    letter-spacing:1px;
+
+    margin-bottom:8px;
+
+}
+
+
+.history-list{
+
+    display:flex;
+    flex-direction:column;
+
+    gap:7px;
+
+}
+
+
+.history-item{
+
+    width:100%;
+
+    padding:10px;
+
+    background:var(--bg-primary);
+
+    border:
+        1px solid
+        var(--border-color);
+
+    border-radius:8px;
+
+    color:var(--text-main);
+
+    text-align:left;
+
+    font-size:.82rem;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+    cursor:pointer;
+
+}
+
+
+.history-item:hover{
+
+    border-color:var(--accent-blue);
+
+}
+
+
+.danger{
+
+    color:var(--accent-red)!important;
+
+}
+
+
+/* ============================================================
+   MAIN
+============================================================ */
+
+#main{
+
+    flex:1;
+
+    min-height:0;
+
+    position:relative;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+
+.view{
+
+    display:none;
+
+    width:100%;
+    height:100%;
+
+    min-height:0;
+
+}
+
+
+.view.active{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+
+/* ============================================================
+   CHAT
+============================================================ */
+
+#chatMessages{
+
+    flex:1;
+
+    min-height:0;
+
+    overflow-y:auto;
+
+    padding:
+        18px 14px 12px;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:12px;
+
+    scroll-behavior:smooth;
+
+}
+
+
+.message{
+
+    max-width:89%;
+
+    padding:
+        12px 15px;
+
+    border-radius:
+        var(--radius-medium);
+
+    line-height:1.5;
+
+    font-size:.94rem;
+
+    white-space:pre-wrap;
+
+    word-break:break-word;
+
+    animation:
+        messageAppear .18s ease;
+
+}
+
+
+@keyframes messageAppear{
+
+    from{
+
+        opacity:0;
+
+        transform:
+            translateY(5px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+            translateY(0);
+
+    }
+
+}
+
+
+.message.user{
+
+    align-self:flex-end;
+
+    color:white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0088ff,
+            #006bd6
+        );
+
+    border-bottom-right-radius:3px;
+
+}
+
+
+.message.bot{
+
+    align-self:flex-start;
+
+    background:var(--bg-secondary);
+
+    border:
+        1px solid
+        var(--border-color);
+
+    border-bottom-left-radius:3px;
+
+}
+
+
+.message.error{
+
+    border-color:var(--accent-red);
+
+}
+
+
+.typing{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:4px;
+
+    height:18px;
+
+}
+
+
+.typing span{
+
+    width:6px;
+    height:6px;
+
+    border-radius:50%;
+
+    background:var(--accent-cyan);
+
+    animation:
+        typingAnimation 1s infinite;
+
+}
+
+
+.typing span:nth-child(2){
+
+    animation-delay:.15s;
+
+}
+
+
+.typing span:nth-child(3){
+
+    animation-delay:.3s;
+
+}
+
+
+@keyframes typingAnimation{
+
+    0%,
+    60%,
+    100%{
+
+        transform:translateY(0);
+
+        opacity:.3;
+
+    }
+
+    30%{
+
+        transform:translateY(-4px);
+
+        opacity:1;
+
+    }
+
+}
+
+
+/* ============================================================
+   INPUT
+============================================================ */
+
+#inputBar{
+
+    padding:
+        9px 10px;
+
+    background:var(--bg-secondary);
+
+    border-top:
+        1px solid
+        var(--border-color);
+
+    display:flex;
+
+    align-items:center;
+
+    gap:7px;
+
+}
+
+
+#inputBox{
+
+    flex:1;
+
+    min-width:0;
+
+    height:45px;
+
+    display:flex;
+
+    align-items:center;
+
+    padding-left:8px;
+
+    border:
+        1px solid
+        var(--border-color);
+
+    border-radius:23px;
+
+    background:var(--bg-primary);
+
+    transition:
+        border-color .2s;
+
+}
+
+
+#inputBox:focus-within{
+
+    border-color:var(--accent-blue);
+
+}
+
+
+#messageInput{
+
+    flex:1;
+
+    min-width:0;
+
+    height:100%;
+
+    padding:
+        0 8px;
+
+    border:0;
+
+    outline:0;
+
+    background:transparent;
+
+    color:white;
+
+    font-size:.94rem;
+
+}
+
+
+#messageInput::placeholder{
+
+    color:var(--text-muted);
+
+}
+
+
+.send-button{
+
+    width:44px;
+    height:44px;
+
+    flex:none;
+
+    border-radius:50%;
+
+    background:var(--accent-blue);
+
+    color:white;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 4px 15px
+        rgba(0,136,255,.25);
+
+    transition:
+        transform .1s,
+        opacity .15s;
+
+}
+
+
+.send-button:active{
+
+    transform:scale(.9);
+
+}
+
+
+.send-button:disabled{
+
+    opacity:.45;
+
+    cursor:default;
+
+}
+
+
+/* ============================================================
+   CALCULADORA
+============================================================ */
+
+#calculatorView{
+
+    align-items:center;
+    justify-content:center;
+
+    padding:18px;
+
+}
+
+
+.calculator{
+
+    width:100%;
+    max-width:350px;
+
+    padding:16px;
+
+    border:
+        1px solid
+        var(--border-color);
+
+    border-radius:
+        var(--radius-large);
+
+    background:var(--bg-secondary);
+
+}
+
+
+#calculatorDisplay{
+
+    width:100%;
+    height:62px;
+
+    margin-bottom:12px;
+
+    padding:
+        8px 12px;
+
+    border:
+        1px solid
+        var(--border-color);
+
+    border-radius:10px;
+
+    background:var(--bg-primary);
+
+    color:var(--accent-cyan);
+
+    text-align:right;
+
+    font-size:1.45rem;
+
+    outline:0;
+
+}
+
+
+.calculator-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap:8px;
+
+}
+
+
+.calc-button{
+
+    min-height:53px;
+
+    border:
+        1px solid
+        var(--border-color);
+
+    border-radius:10px;
+
+    background:var(--bg-card);
+
+    color:white;
+
+    cursor:pointer;
+
+    font-size:1rem;
+
+}
+
+
+.calc-button:active{
+
+    transform:scale(.95);
+
+}
+
+
+.calc-button.operator{
+
+    color:var(--accent-cyan);
+
+}
+
+
+/* ============================================================
+   MEMÓRIA
+============================================================ */
+
+#memoryView{
+
+    overflow-y:auto;
+
+    padding:18px;
+
+}
+
+
+.card{
+
+    background:var(--bg-secondary);
+
+    border:
+        1px solid
+        var(--border-color);
+
+    border-radius:
+        var(--radius-medium);
+
+    padding:16px;
+
+    margin-bottom:12px;
+
+}
+
+
+.card-title{
+
+    display:flex;
+    align-items:center;
+
+    gap:8px;
+
+    color:var(--accent-cyan);
+
+    font-weight:700;
+
+    margin-bottom:12px;
+
+}
+
+
+.stat-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    padding:9px 0;
+
+    border-bottom:
+        1px solid
+        var(--border-color);
+
+    color:var(--text-muted);
+
+    font-size:.86rem;
+
+}
+
+
+.stat-row:last-child{
+
+    border-bottom:0;
+
+}
+
+
+.stat-row strong{
+
+    color:white;
+
+}
+
+
+/* ============================================================
+   TOAST / ERROS
+============================================================ */
+
+#toast{
+
+    position:absolute;
+
+    left:50%;
+
+    bottom:76px;
+
+    transform:
+        translate(-50%,15px);
+
+    max-width:90%;
+
+    padding:
+        10px 14px;
+
+    background:#202a3b;
+
+    border:
+        1px solid
+        var(--border-color);
+
+    border-radius:10px;
+
+    color:white;
+
+    font-size:.82rem;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    z-index:200;
+
+    transition:
+        opacity .2s,
+        transform .2s;
+
+}
+
+
+#toast.show{
+
+    opacity:1;
+
+    transform:
+        translate(-50%,0);
+
+}
+
+
+/* ============================================================
+   RESPONSIVIDADE
+============================================================ */
+
+@media(max-width:420px){
+
+    .message{
+
+        max-width:93%;
+
+    }
+
+    #inputBar{
+
+        padding-bottom:
+            max(
+                9px,
+                env(safe-area-inset-bottom)
+            );
+
+    }
+
+}
+
+</style>
 </head>
+
+
 <body>
 
-    <div id="app-container">
-        <div id="overlayMenu" class="overlay-menu" onclick="fecharMenu()"></div>
+<div id="app">
 
-        <header>
-            <div class="header-left">
-                <button class="menu-btn" onclick="abrirMenu()">
-                    <i data-lucide="menu"></i>
-                </button>
-                <div class="brand-title">
-                    <i data-lucide="bot"></i> NYORE.IA
-                </div>
-            </div>
-            <div style="font-size: 0.8rem; color: var(--accent-cyan);">● Ativa</div>
-        </header>
+    <!-- ======================================================
+         OVERLAY
+    ======================================================= -->
 
-        <sidebar id="sideMenu">
-            <div class="brand-title" style="padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">
-                <i data-lucide="bot"></i> Painel Nyore
-            </div>
+    <div id="menuOverlay"></div>
 
-            <div class="nav-menu">
-                <button class="nav-btn active" onclick="mudarAba('chat', this)">
-                    <i data-lucide="message-square"></i> Chat Principal
-                </button>
-                <button class="nav-btn" onclick="mudarAba('calc', this)">
-                    <i data-lucide="calculator"></i> Calculadora
-                </button>
-            </div>
 
-            <div class="history-section">
-                <div class="history-title">Histórico Recente</div>
-                <div id="history-list"></div>
-            </div>
+    <!-- ======================================================
+         HEADER
+    ======================================================= -->
 
-            <button class="nav-btn" style="color: var(--accent-blue);" onclick="novaConversa()">
-                <i data-lucide="plus-circle"></i> Nova Conversa
+    <header id="header">
+
+        <div class="header-left">
+
+            <button
+                id="menuButton"
+                class="icon-button"
+                type="button"
+                aria-label="Abrir menu">
+
+                <i data-lucide="menu"></i>
+
             </button>
-        </sidebar>
 
-        <main id="mainContent">
-            <div id="view-chat" class="view-panel active">
-                <div id="chat-container">
-                    <div class="msg bot-msg">
-                        Sistemas operacionais, Chefão! Menu deslizante e envio corrigidos.
-                    </div>
-                </div>
-                <form class="input-bar" onsubmit="enviarForm(event)">
-                    <input type="text" id="chatInput" placeholder="Digita a tua mensagem..." autocomplete="off">
-                    <button type="submit">ENVIAR</button>
-                </form>
+
+            <div class="brand">
+
+                <i data-lucide="brain"></i>
+
+                NYORE.IA
+
             </div>
 
-            <div id="view-calc" class="view-panel">
-                <div class="calc-wrapper">
-                    <input type="text" id="calcDisplay" class="calc-display" readonly>
-                    <div class="calc-grid">
-                        <button class="calc-btn" onclick="calcClear()">C</button>
-                        <button class="calc-btn op" onclick="calcAppend('/')">/</button>
-                        <button class="calc-btn op" onclick="calcAppend('*')">*</button>
-                        <button class="calc-btn op" onclick="calcAppend('-')">-</button>
-                        <button class="calc-btn" onclick="calcAppend('7')">7</button>
-                        <button class="calc-btn" onclick="calcAppend('8')">8</button>
-                        <button class="calc-btn" onclick="calcAppend('9')">9</button>
-                        <button class="calc-btn op" onclick="calcAppend('+')">+</button>
-                        <button class="calc-btn" onclick="calcAppend('4')">4</button>
-                        <button class="calc-btn" onclick="calcAppend('5')">5</button>
-                        <button class="calc-btn" onclick="calcAppend('6')">6</button>
-                        <button class="calc-btn op" onclick="calcEval()">=</button>
-                        <button class="calc-btn" onclick="calcAppend('1')">1</button>
-                        <button class="calc-btn" onclick="calcAppend('2')">2</button>
-                        <button class="calc-btn" onclick="calcAppend('3')">3</button>
-                        <button class="calc-btn" onclick="calcAppend('0')">0</button>
-                    </div>
-                </div>
+        </div>
+
+
+        <div class="status">
+
+            <span class="status-dot"></span>
+
+            ATIVA
+
+        </div>
+
+    </header>
+
+
+    <!-- ======================================================
+         SIDEBAR
+    ======================================================= -->
+
+    <aside id="sidebar">
+
+        <div class="brand sidebar-title">
+
+            <i data-lucide="brain"></i>
+
+            Painel NYORE
+
+        </div>
+
+
+        <nav class="nav-list">
+
+            <button
+                type="button"
+                class="nav-button active"
+                data-view="chat">
+
+                <i data-lucide="message-square"></i>
+
+                Chat Principal
+
+            </button>
+
+
+            <button
+                type="button"
+                class="nav-button"
+                data-view="calculator">
+
+                <i data-lucide="calculator"></i>
+
+                Calculadora
+
+            </button>
+
+
+            <button
+                type="button"
+                class="nav-button"
+                data-view="memory">
+
+                <i data-lucide="brain"></i>
+
+                Cérebro / Memória
+
+            </button>
+
+        </nav>
+
+
+        <div class="history">
+
+            <div class="history-title">
+
+                Histórico recente
+
             </div>
-        </main>
-    </div>
 
-    <script>
-        /* =========================================================
-           CÉREBRO INTEGRAL E REPARADO DA NYORE.IA
-           ========================================================= */
-        class CerebroNyore {
-            constructor() {
-                this.prefixoTopico = "nyore_topico_";
-                this.prefixoPerguntDirect = "nyore_qa_";
+
+            <div
+                id="historyList"
+                class="history-list">
+            </div>
+
+        </div>
+
+
+        <button
+            id="newConversationButton"
+            type="button"
+            class="nav-button">
+
+            <i data-lucide="plus-circle"></i>
+
+            Nova conversa
+
+        </button>
+
+
+        <button
+            id="clearDataButton"
+            type="button"
+            class="nav-button danger">
+
+            <i data-lucide="trash-2"></i>
+
+            Limpar memória
+
+        </button>
+
+    </aside>
+
+
+    <!-- ======================================================
+         MAIN
+    ======================================================= -->
+
+    <main id="main">
+
+
+        <!-- ==================================================
+             CHAT
+        =================================================== -->
+
+        <section
+            id="chatView"
+            class="view active">
+
+
+            <div id="chatMessages">
+
+                <div class="message bot">
+
+                    Olá! Eu sou a NYORE.IA. 🧠
+
+                    <br><br>
+
+                    O meu núcleo local está ativo.
+
+                    Posso conversar contigo, aprender
+                    informações, guardar conhecimento,
+                    recuperar contexto e executar
+                    algumas ferramentas.
+
+                    <br><br>
+
+                    Para me ensinar:
+
+                    <br><br>
+
+                    <b>
+                    Nyore, aprende que Angola:
+                    Angola é um país de África.
+                    </b>
+
+                </div>
+
+            </div>
+
+
+            <div id="inputBar">
+
+
+                <div id="inputBox">
+
+
+                    <button
+                        id="voiceButton"
+                        class="icon-button"
+                        type="button"
+                        aria-label="Entrada de voz">
+
+                        <i data-lucide="mic"></i>
+
+                    </button>
+
+
+                    <input
+                        id="messageInput"
+                        type="text"
+                        autocomplete="off"
+                        autocorrect="on"
+                        spellcheck="true"
+                        placeholder="Escreve para a Nyore..."
+                    >
+
+
+                    <button
+                        id="speakButton"
+                        class="icon-button"
+                        type="button"
+                        aria-label="Ler resposta">
+
+                        <i data-lucide="volume-2"></i>
+
+                    </button>
+
+
+                </div>
+
+
+                <button
+                    id="sendButton"
+                    class="send-button"
+                    type="button"
+                    aria-label="Enviar">
+
+                    <i data-lucide="send"></i>
+
+                </button>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================
+             CALCULADORA
+        =================================================== -->
+
+        <section
+            id="calculatorView"
+            class="view">
+
+
+            <div class="calculator">
+
+
+                <input
+                    id="calculatorDisplay"
+                    type="text"
+                    readonly
+                    value=""
+                >
+
+
+                <div class="calculator-grid">
+
+
+                    <button
+                        type="button"
+                        class="calc-button"
+                        data-calc="clear">
+
+                        C
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="calc-button operator"
+                        data-calc="operator"
+                        data-value="/">
+
+                        ÷
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="calc-button operator"
+                        data-calc="operator"
+                        data-value="*">
+
+                        ×
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="calc-button operator"
+                        data-calc="delete">
+
+                        ⌫
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="calc-button"
+                        data-calc="number"
+                        data-value="7">
+
+                        7
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="calc-button"
+                        data-calc="number"
+                        data-value="8">
+
+                        8
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="calc-button"
+                        data-calc="number"
+                        data-value="9">
+
+                        9
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="calc-button operator"
+                        data-calc="operator"
+                        data-value="-">
+
+                        −
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="calc-button"
+                        data-calc="number"
+                        data-value="4">
+
+                        4
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="calc-button"
+                        data-calc="number"
+                        data-value="5">
+
+                        5
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="calc-button"
+                        data-calc="number"
+                        data-value="6">
+
+                        6
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="calc-button operator"
+                        data-calc="operator"
+                        data-value="+">
+
+                        +
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="calc-button"
+                        data-calc="number"
+                        data-value="1">
+
+                        1
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="calc-button"
+                        data-calc="number"
+                        data-value="2">
+
+                        2
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="calc-button"
+                        data-calc="number"
+                        data-value="3">
+
+                        3
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="calc-button operator"
+                        data-calc="equals">
+
+                        =
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="calc-button"
+                        data-calc="number"
+                        data-value="0"
+                        style="grid-column:span 3">
+
+                        0
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="calc-button"
+                        data-calc="decimal">
+
+                        .
+
+                    </button>
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================
+             MEMÓRIA
+        =================================================== -->
+
+        <section
+            id="memoryView"
+            class="view">
+
+
+            <div class="card">
+
+                <div class="card-title">
+
+                    <i data-lucide="brain"></i>
+
+                    Estado do cérebro
+
+                </div>
+
+
+                <div class="stat-row">
+
+                    <span>
+                        Conhecimentos
+                    </span>
+
+                    <strong id="knowledgeCount">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-row">
+
+                    <span>
+                        Mensagens processadas
+                    </span>
+
+                    <strong id="messageCount">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-row">
+
+                    <span>
+                        Conversas
+                    </span>
+
+                    <strong id="conversationCount">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+
+                    Como ensinar a NYORE
+
+                </div>
+
+
+                <p
+                    style="
+                        color:var(--text-muted);
+                        line-height:1.65;
+                        font-size:.88rem;
+                    "
+                >
+
+                    Usa:
+
+                    <br><br>
+
+                    <b style="color:white">
+                        Nyore, aprende que Angola:
+                    </b>
+
+                    <br>
+
+                    Angola é um país localizado
+                    na África Austral.
+
+                    <br><br>
+
+                    Depois pergunta:
+
+                    <br><br>
+
+                    <b style="color:white">
+                        O que é Angola?
+                    </b>
+
+                </p>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- ======================================================
+         TOAST
+    ======================================================= -->
+
+    <div id="toast"></div>
+
+</div>
+
+
+<script>
+
+/*
+================================================================
+ NYORE.IA V4
+ MOTOR PRINCIPAL
+
+ IMPORTANTE:
+
+ Nenhum botão usa onclick.
+ Todos os eventos são registados pelo sistema
+ EventManager no final do código.
+
+ Isto evita que um problema num botão específico
+ contamine os outros.
+================================================================
+*/
+
+
+"use strict";
+
+
+/* ============================================================
+   UTILITÁRIOS SEGUROS
+============================================================ */
+
+const Safe = {
+
+
+    jsonGet(key, fallback){
+
+        try{
+
+            const value =
+                localStorage.getItem(key);
+
+            if(value === null){
+
+                return fallback;
+
             }
 
-            limpar(str) {
-                if (!str) return "";
-                return str.toLowerCase()
-                          .normalize("NFD")
-                          .replace(/[\u0300-\u036f]/g, "")
-                          .replace(/["'*`*_]/g, "")
-                          .trim();
+            const parsed =
+                JSON.parse(value);
+
+            return parsed;
+
+        }catch(error){
+
+            console.warn(
+                "NYORE: dados corrompidos:",
+                key,
+                error
+            );
+
+            try{
+
+                localStorage.removeItem(key);
+
+            }catch(_){}
+
+            return fallback;
+
+        }
+
+    },
+
+
+    jsonSet(key,value){
+
+        try{
+
+            localStorage.setItem(
+                key,
+                JSON.stringify(value)
+            );
+
+            return true;
+
+        }catch(error){
+
+            console.warn(
+                "NYORE: não foi possível guardar:",
+                error
+            );
+
+            return false;
+
+        }
+
+    },
+
+
+    text(value){
+
+        return String(
+            value ?? ""
+        );
+
+    },
+
+
+    normalize(value){
+
+        return this.text(value)
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(
+                /[\u0300-\u036f]/g,
+                ""
+            )
+            .replace(
+                /[^\w\s:?.,!+\-*/()]/g,
+                " "
+            )
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .trim();
+
+    }
+
+};
+
+
+/* ============================================================
+   TOAST
+============================================================ */
+
+const Toast = {
+
+    timer:null,
+
+
+    show(message){
+
+        const element =
+            document.getElementById("toast");
+
+        if(!element){
+
+            return;
+
+        }
+
+        element.textContent =
+            Safe.text(message);
+
+        element.classList.add("show");
+
+
+        clearTimeout(this.timer);
+
+
+        this.timer =
+            setTimeout(()=>{
+
+                element.classList.remove(
+                    "show"
+                );
+
+            },2600);
+
+    }
+
+};
+
+
+/* ============================================================
+   CÉREBRO NYORE
+============================================================ */
+
+class NyoreBrain {
+
+
+    constructor(){
+
+        this.knowledgePrefix =
+            "nyore_v4_knowledge_";
+
+        this.statsKey =
+            "nyore_v4_stats";
+
+        this.contextKey =
+            "nyore_v4_context";
+
+
+        this.stats =
+            Safe.jsonGet(
+                this.statsKey,
+                {
+                    messages:0,
+                    conversations:0
+                }
+            );
+
+
+        this.context =
+            Safe.jsonGet(
+                this.contextKey,
+                []
+            );
+
+
+        if(!Array.isArray(this.context)){
+
+            this.context = [];
+
+        }
+
+    }
+
+
+    normalize(text){
+
+        return Safe.normalize(text);
+
+    }
+
+
+    saveStats(){
+
+        Safe.jsonSet(
+            this.statsKey,
+            this.stats
+        );
+
+    }
+
+
+    saveContext(){
+
+        Safe.jsonSet(
+            this.contextKey,
+            this.context
+        );
+
+    }
+
+
+    addContext(role,text){
+
+        this.context.push({
+
+            role:role,
+
+            text:Safe.text(text),
+
+            time:Date.now()
+
+        });
+
+
+        /*
+            Contexto curto:
+            últimas 14 entradas.
+        */
+
+        if(this.context.length > 14){
+
+            this.context =
+                this.context.slice(-14);
+
+        }
+
+
+        this.saveContext();
+
+    }
+
+
+    getKey(topic){
+
+        return this.knowledgePrefix +
+            this.normalize(topic)
+            .replace(/\s+/g,"_");
+
+    }
+
+
+    teach(topic,content){
+
+        topic =
+            Safe.text(topic).trim();
+
+        content =
+            Safe.text(content).trim();
+
+
+        if(!topic || !content){
+
+            return "Preciso de um tópico e de uma informação.";
+
+        }
+
+
+        const object = {
+
+            topic:topic,
+
+            content:content,
+
+            created:Date.now(),
+
+            words:
+                this.normalize(topic)
+                .split(" ")
+                .filter(Boolean)
+
+        };
+
+
+        Safe.jsonSet(
+            this.getKey(topic),
+            object
+        );
+
+
+        return (
+            "🧠 Aprendido.\n\n" +
+            'Guardei "' +
+            topic +
+            '" na minha memória local.'
+        );
+
+    }
+
+
+    getAllKnowledge(){
+
+        const result = [];
+
+
+        try{
+
+            for(
+                let i=0;
+                i<localStorage.length;
+                i++
+            ){
+
+                const key =
+                    localStorage.key(i);
+
+
+                if(
+                    !key ||
+                    !key.startsWith(
+                        this.knowledgePrefix
+                    )
+                ){
+
+                    continue;
+
+                }
+
+
+                const item =
+                    Safe.jsonGet(
+                        key,
+                        null
+                    );
+
+
+                if(
+                    item &&
+                    typeof item === "object"
+                ){
+
+                    result.push(item);
+
+                }
+
             }
 
-            salvarTopico(topico, conteudo) {
-                const chave = this.limpar(topico);
-                if (!chave) return "Não consegui entender o tópico, Chefão.";
-                localStorage.setItem(this.prefixoTopico + chave, conteudo);
-                return `Entendido, Chefão! Guardei na memória tudo sobre **${topico.toUpperCase().trim()}**.`;
+        }catch(error){
+
+            console.warn(
+                "NYORE memory scan:",
+                error
+            );
+
+        }
+
+
+        return result;
+
+    }
+
+
+    search(query){
+
+        const q =
+            this.normalize(query);
+
+
+        const queryWords =
+            q.split(" ")
+            .filter(
+                word =>
+                    word.length > 2
+            );
+
+
+        if(!queryWords.length){
+
+            return null;
+
+        }
+
+
+        const items =
+            this.getAllKnowledge();
+
+
+        let best = null;
+        let bestScore = 0;
+
+
+        for(const item of items){
+
+            const topic =
+                this.normalize(
+                    item.topic
+                );
+
+            const content =
+                this.normalize(
+                    item.content
+                );
+
+
+            let score = 0;
+
+
+            for(
+                const word
+                of queryWords
+            ){
+
+                if(topic.includes(word)){
+
+                    score += 5;
+
+                }
+
+
+                if(content.includes(word)){
+
+                    score += 1;
+
+                }
+
             }
 
-            salvarPerguntaResposta(pergunta, resposta) {
-                const chave = this.limpar(pergunta);
-                if (!chave) return "Não entendi a pergunta, Chefão.";
-                localStorage.setItem(this.prefixoPerguntDirect + chave, resposta);
-                return `Mapeamento concluído, Chefão! Quando me perguntares *"${pergunta.trim()}"*, vou responder exatamente: **"${resposta.trim()}"**.`;
+
+            if(score > bestScore){
+
+                bestScore = score;
+
+                best = item;
+
             }
 
-            buscarTopico(termo) {
-                const chave = this.limpar(termo);
-                return localStorage.getItem(this.prefixoTopico + chave);
+        }
+
+
+        return best;
+
+    }
+
+
+    detectIntent(text){
+
+        const t =
+            this.normalize(text);
+
+
+        if(
+            /^(oi|ola|olá|hey|hello|bom dia|boa tarde|boa noite)/
+            .test(t)
+        ){
+
+            return "greeting";
+
+        }
+
+
+        if(
+            t.includes("obrigad") ||
+            t.includes("valeu")
+        ){
+
+            return "thanks";
+
+        }
+
+
+        if(
+            t.includes("aprende") ||
+            t.includes("memoriza") ||
+            t.includes("guarda isto") ||
+            t.includes("lembra que")
+        ){
+
+            return "learn";
+
+        }
+
+
+        if(
+            t.includes("quem e") ||
+            t.includes("o que e") ||
+            t.includes("oque e") ||
+            t.includes("explica") ||
+            t.includes("define")
+        ){
+
+            return "question";
+
+        }
+
+
+        if(
+            t.includes("como estas") ||
+            t.includes("tudo bem") ||
+            t.includes("como voce esta")
+        ){
+
+            return "status";
+
+        }
+
+
+        if(
+            t.includes("quem te criou") ||
+            t.includes("quem criou voce") ||
+            t.includes("quem criou-te")
+        ){
+
+            return "identity";
+
+        }
+
+
+        if(
+            t.includes("o que sabes") ||
+            t.includes("oque sabes") ||
+            t.includes("o que tens na memoria")
+        ){
+
+            return "memory";
+
+        }
+
+
+        if(
+            t.includes("lembra") ||
+            t.includes("recorda")
+        ){
+
+            return "recall";
+
+        }
+
+
+        return "general";
+
+    }
+
+
+    extractLearning(text){
+
+        const parts =
+            Safe.text(text)
+            .split(":");
+
+
+        if(parts.length < 2){
+
+            return null;
+
+        }
+
+
+        const content =
+            parts
+            .slice(1)
+            .join(":")
+            .trim();
+
+
+        let topic =
+            parts[0]
+            .replace(
+                /nyore/gi,
+                ""
+            )
+            .replace(
+                /aprende/gi,
+                ""
+            )
+            .replace(
+                /memoriza/gi,
+                ""
+            )
+            .replace(
+                /guarda isto/gi,
+                ""
+            )
+            .replace(
+                /lembra que/gi,
+                ""
+            )
+            .trim();
+
+
+        if(!topic){
+
+            topic = "geral";
+
+        }
+
+
+        if(!content){
+
+            return null;
+
+        }
+
+
+        return {
+
+            topic:topic,
+
+            content:content
+
+        };
+
+    }
+
+
+    random(array){
+
+        return array[
+            Math.floor(
+                Math.random() *
+                array.length
+            )
+        ];
+
+    }
+
+
+    answer(text){
+
+        const raw =
+            Safe.text(text).trim();
+
+
+        if(!raw){
+
+            return null;
+
+        }
+
+
+        this.stats.messages++;
+
+        this.saveStats();
+
+
+        this.addContext(
+            "user",
+            raw
+        );
+
+
+        const intent =
+            this.detectIntent(raw);
+
+
+        /* --------------------------------------------
+           APRENDIZAGEM
+        -------------------------------------------- */
+
+        if(intent === "learn"){
+
+            const data =
+                this.extractLearning(raw);
+
+
+            if(!data){
+
+                return (
+                    "Posso aprender contigo. 🧠\n\n" +
+                    "Usa:\n\n" +
+                    'Nyore, aprende que [tópico]: [informação]'
+                );
+
             }
 
-            buscarPerguntaDireta(pergunta) {
-                const chave = this.limpar(pergunta);
-                return localStorage.getItem(this.prefixoPerguntDirect + chave);
+
+            return this.teach(
+                data.topic,
+                data.content
+            );
+
+        }
+
+
+        /* --------------------------------------------
+           SAUDAÇÃO
+        -------------------------------------------- */
+
+        if(intent === "greeting"){
+
+            return this.random([
+
+                "Olá! 🧠 Estou ativa. O que vamos fazer?",
+
+                "Olá! A Nyore está pronta para pensar contigo.",
+
+                "Oi! Pode mandar a próxima.",
+
+                "Olá! Sistemas ativos. Como posso ajudar?"
+
+            ]);
+
+        }
+
+
+        /* --------------------------------------------
+           AGRADECIMENTO
+        -------------------------------------------- */
+
+        if(intent === "thanks"){
+
+            return this.random([
+
+                "Sempre às ordens. 🤝",
+
+                "Tamo junto! 🚀",
+
+                "De nada. Continuamos quando quiseres."
+
+            ]);
+
+        }
+
+
+        /* --------------------------------------------
+           ESTADO
+        -------------------------------------------- */
+
+        if(intent === "status"){
+
+            return (
+                "Estou ativa e pronta. 🧠\n\n" +
+                "O meu núcleo local está funcionando."
+            );
+
+        }
+
+
+        /* --------------------------------------------
+           IDENTIDADE
+        -------------------------------------------- */
+
+        if(intent === "identity"){
+
+            return (
+                "Eu sou a NYORE.IA.\n\n" +
+                "O meu núcleo atual funciona localmente " +
+                "no dispositivo. Posso armazenar " +
+                "conhecimento, analisar texto, manter " +
+                "contexto recente e utilizar ferramentas " +
+                "integradas sem depender de uma API para " +
+                "essas funções."
+            );
+
+        }
+
+
+        /* --------------------------------------------
+           MEMÓRIA
+        -------------------------------------------- */
+
+        if(intent === "memory"){
+
+            const total =
+                this.getAllKnowledge().length;
+
+
+            if(total === 0){
+
+                return (
+                    "A minha memória ainda está vazia. 🧠\n\n" +
+                    "Ensina-me alguma coisa."
+                );
+
             }
 
-            processar(textoOriginal) {
-                if (!textoOriginal || !textoOriginal.trim()) return null;
 
-                const raw = textoOriginal.trim();
-                const t = this.limpar(raw);
+            return (
+                "Tenho " +
+                total +
+                " conhecimento(s) guardado(s) " +
+                "na memória local."
+            );
 
-                // Método de resposta exata: "Quando eu perguntar X, responde Y"
-                if (t.includes("quando eu perguntar") || t.includes("se eu perguntar")) {
-                    let partes = raw.split(/responde|responda/i);
-                    if (partes.length >= 2) {
-                        let pergunta = partes[0].replace(/(nyore|quando eu perguntar|se eu perguntar|que|para)/gi, "").replace(/["',]/g, "").trim();
-                        let resposta = partes.slice(1).join("responde").replace(/["']/g, "").trim();
-                        return this.salvarPerguntaResposta(pergunta, resposta);
+        }
+
+
+        /* --------------------------------------------
+           RECORDAR
+        -------------------------------------------- */
+
+        if(intent === "recall"){
+
+            if(
+                this.context.length >= 2
+            ){
+
+                const previous =
+                    this.context[
+                        this.context.length - 2
+                    ];
+
+
+                return (
+                    'Lembro-me de teres dito:\n\n"' +
+                    previous.text +
+                    '"'
+                );
+
+            }
+
+
+            return (
+                "Ainda não tenho contexto suficiente " +
+                "para recordar uma mensagem anterior."
+            );
+
+        }
+
+
+        /* --------------------------------------------
+           BUSCA DE CONHECIMENTO
+        -------------------------------------------- */
+
+        const result =
+            this.search(raw);
+
+
+        if(result){
+
+            return (
+                "📚 Encontrei isto na minha memória:\n\n" +
+                result.content
+            );
+
+        }
+
+
+        /* --------------------------------------------
+           FALLBACK
+        -------------------------------------------- */
+
+        return (
+            "Entendi o que disseste.\n\n" +
+            "Ainda não tenho conhecimento suficiente " +
+            "sobre esse assunto na minha memória local.\n\n" +
+            "Se quiseres ensinar-me, usa:\n\n" +
+            '"Nyore, aprende que tópico: informação"'
+        );
+
+    }
+
+
+    clearMemory(){
+
+        const keys = [];
+
+
+        try{
+
+            for(
+                let i=0;
+                i<localStorage.length;
+                i++
+            ){
+
+                const key =
+                    localStorage.key(i);
+
+
+                if(
+                    key &&
+                    key.startsWith(
+                        this.knowledgePrefix
+                    )
+                ){
+
+                    keys.push(key);
+
+                }
+
+            }
+
+
+            keys.forEach(
+                key =>
+                    localStorage.removeItem(key)
+            );
+
+
+            this.context = [];
+
+            this.saveContext();
+
+
+            return true;
+
+        }catch(error){
+
+            console.error(error);
+
+            return false;
+
+        }
+
+    }
+
+
+}
+
+
+/* ============================================================
+   APPLICATION
+============================================================ */
+
+const App = {
+
+
+    brain:null,
+
+    history:[],
+
+    calculator:"",
+
+    sending:false,
+
+    lastAnswer:"",
+
+    voice:null,
+
+
+    init(){
+
+        this.brain =
+            new NyoreBrain();
+
+
+        this.history =
+            Safe.jsonGet(
+                "nyore_v4_history",
+                []
+            );
+
+
+        if(!Array.isArray(this.history)){
+
+            this.history = [];
+
+        }
+
+
+        this.cacheElements();
+
+        this.bindEvents();
+
+        this.renderHistory();
+
+        this.updateStats();
+
+        this.initIcons();
+
+        this.recover();
+
+
+        const input =
+            this.el("messageInput");
+
+
+        if(input){
+
+            setTimeout(
+                ()=>input.focus(),
+                250
+            );
+
+        }
+
+    },
+
+
+    /* --------------------------------------------------------
+       ELEMENTOS
+    -------------------------------------------------------- */
+
+    cacheElements(){
+
+        this.elements = {
+
+            menuButton:
+                this.el("menuButton"),
+
+            menuOverlay:
+                this.el("menuOverlay"),
+
+            sidebar:
+                this.el("sidebar"),
+
+            messageInput:
+                this.el("messageInput"),
+
+            sendButton:
+                this.el("sendButton"),
+
+            chatMessages:
+                this.el("chatMessages"),
+
+            voiceButton:
+                this.el("voiceButton"),
+
+            speakButton:
+                this.el("speakButton"),
+
+            historyList:
+                this.el("historyList"),
+
+            newConversationButton:
+                this.el(
+                    "newConversationButton"
+                ),
+
+            clearDataButton:
+                this.el(
+                    "clearDataButton"
+                ),
+
+            calculatorDisplay:
+                this.el(
+                    "calculatorDisplay"
+                ),
+
+            knowledgeCount:
+                this.el(
+                    "knowledgeCount"
+                ),
+
+            messageCount:
+                this.el(
+                    "messageCount"
+                ),
+
+            conversationCount:
+                this.el(
+                    "conversationCount"
+                )
+
+        };
+
+    },
+
+
+    el(id){
+
+        return document.getElementById(id);
+
+    },
+
+
+    /* --------------------------------------------------------
+       EVENTOS
+    -------------------------------------------------------- */
+
+    bindEvents(){
+
+        const e =
+            this.elements;
+
+
+        /* MENU */
+
+        this.on(
+            e.menuButton,
+            "click",
+            ()=>this.toggleMenu()
+        );
+
+
+        this.on(
+            e.menuOverlay,
+            "click",
+            ()=>this.closeMenu()
+        );
+
+
+        /* ENVIO */
+
+        this.on(
+            e.sendButton,
+            "click",
+            ()=>this.send()
+        );
+
+
+        this.on(
+            e.messageInput,
+            "keydown",
+            event => {
+
+                if(
+                    event.key === "Enter"
+                ){
+
+                    event.preventDefault();
+
+                    this.send();
+
+                }
+
+            }
+        );
+
+
+        /* ABAS */
+
+        document
+            .querySelectorAll(
+                ".nav-button[data-view]"
+            )
+            .forEach(button => {
+
+                this.on(
+                    button,
+                    "click",
+                    ()=>{
+                        this.changeView(
+                            button.dataset.view,
+                            button
+                        );
                     }
+                );
+
+            });
+
+
+        /* NOVA CONVERSA */
+
+        this.on(
+            e.newConversationButton,
+            "click",
+            ()=>this.newConversation()
+        );
+
+
+        /* LIMPAR */
+
+        this.on(
+            e.clearDataButton,
+            "click",
+            ()=>this.clearEverything()
+        );
+
+
+        /* VOZ */
+
+        this.on(
+            e.voiceButton,
+            "click",
+            ()=>this.startVoice()
+        );
+
+
+        /* LEITURA */
+
+        this.on(
+            e.speakButton,
+            "click",
+            ()=>this.speakLast()
+        );
+
+
+        /* CALCULADORA */
+
+        document
+            .querySelectorAll(
+                "[data-calc]"
+            )
+            .forEach(button => {
+
+                this.on(
+                    button,
+                    "click",
+                    ()=>this.calculatorAction(
+                        button
+                    )
+                );
+
+            });
+
+
+        /* ESC */
+
+        this.on(
+            document,
+            "keydown",
+            event => {
+
+                if(
+                    event.key === "Escape"
+                ){
+
+                    this.closeMenu();
+
                 }
 
-                // Método de tópicos: "Nyore, aprende que X: Y"
-                if (t.includes("aprende") || t.includes("guarda isto") || t.includes("aprende isto")) {
-                    let partes = raw.split(":");
-                    if (partes.length >= 2) {
-                        let topico = partes[0].replace(/(nyore|aprende|isto|que|aprenda)/gi, "").trim();
-                        let conteudo = partes.slice(1).join(":").trim();
-                        return this.salvarTopico(topico, conteudo);
-                    } else {
-                        let extraido = raw.replace(/(nyore|aprende|isto|que|aprenda)/gi, "").trim();
-                        let palavras = extraido.split(" ");
-                        let topico = palavras[0];
-                        return this.salvarTopico(topico, extraido);
+            }
+        );
+
+
+        /* ERROS */
+
+        window.addEventListener(
+            "error",
+            event => {
+
+                console.error(
+                    "NYORE GLOBAL ERROR:",
+                    event.error ||
+                    event.message
+                );
+
+                Toast.show(
+                    "A NYORE encontrou um erro e tentou continuar."
+                );
+
+            }
+        );
+
+
+        window.addEventListener(
+            "unhandledrejection",
+            event => {
+
+                console.error(
+                    "NYORE PROMISE ERROR:",
+                    event.reason
+                );
+
+                Toast.show(
+                    "Uma operação encontrou um problema."
+                );
+
+            }
+        );
+
+    },
+
+
+    /* --------------------------------------------------------
+       EVENT LISTENER SEGURO
+    -------------------------------------------------------- */
+
+    on(element,event,callback){
+
+        if(!element){
+
+            console.warn(
+                "NYORE: elemento não encontrado."
+            );
+
+            return;
+
+        }
+
+
+        try{
+
+            element.addEventListener(
+                event,
+                callback
+            );
+
+        }catch(error){
+
+            console.error(
+                "NYORE EVENT:",
+                error
+            );
+
+        }
+
+    },
+
+
+    /* --------------------------------------------------------
+       ÍCONES
+    -------------------------------------------------------- */
+
+    initIcons(){
+
+        try{
+
+            if(
+                window.lucide &&
+                typeof lucide.createIcons ===
+                "function"
+            ){
+
+                lucide.createIcons();
+
+            }
+
+        }catch(error){
+
+            console.warn(
+                "Lucide indisponível.",
+                error
+            );
+
+        }
+
+    },
+
+
+    /* --------------------------------------------------------
+       MENU
+    -------------------------------------------------------- */
+
+    toggleMenu(){
+
+        const sidebar =
+            this.elements.sidebar;
+
+        if(!sidebar){
+
+            return;
+
+        }
+
+
+        const open =
+            !sidebar.classList.contains(
+                "open"
+            );
+
+
+        sidebar.classList.toggle(
+            "open",
+            open
+        );
+
+
+        this.elements.menuOverlay
+            ?.classList.toggle(
+                "active",
+                open
+            );
+
+    },
+
+
+    closeMenu(){
+
+        this.elements.sidebar
+            ?.classList.remove(
+                "open"
+            );
+
+
+        this.elements.menuOverlay
+            ?.classList.remove(
+                "active"
+            );
+
+    },
+
+
+    /* --------------------------------------------------------
+       ABAS
+    -------------------------------------------------------- */
+
+    changeView(view,button){
+
+        document
+            .querySelectorAll(
+                ".view"
+            )
+            .forEach(panel => {
+
+                panel.classList.remove(
+                    "active"
+                );
+
+            });
+
+
+        const target =
+            this.el(
+                view === "chat"
+                    ? "chatView"
+                    : view === "calculator"
+                        ? "calculatorView"
+                        : "memoryView"
+            );
+
+
+        if(target){
+
+            target.classList.add(
+                "active"
+            );
+
+        }
+
+
+        document
+            .querySelectorAll(
+                ".nav-button[data-view]"
+            )
+            .forEach(btn => {
+
+                btn.classList.remove(
+                    "active"
+                );
+
+            });
+
+
+        if(button){
+
+            button.classList.add(
+                "active"
+            );
+
+        }
+
+
+        this.closeMenu();
+
+        this.updateStats();
+
+    },
+
+
+    /* --------------------------------------------------------
+       CHAT
+    -------------------------------------------------------- */
+
+    addMessage(
+        sender,
+        text,
+        error=false
+    ){
+
+        const container =
+            this.elements.chatMessages;
+
+
+        if(!container){
+
+            return null;
+
+        }
+
+
+        const message =
+            document.createElement(
+                "div"
+            );
+
+
+        message.className =
+            "message " +
+            (
+                sender === "user"
+                    ? "user"
+                    : "bot"
+            );
+
+
+        if(error){
+
+            message.classList.add(
+                "error"
+            );
+
+        }
+
+
+        /*
+            textContent:
+            evita injeção de HTML.
+        */
+
+        message.textContent =
+            Safe.text(text);
+
+
+        container.appendChild(
+            message
+        );
+
+
+        this.scrollChat();
+
+
+        if(sender !== "user"){
+
+            this.lastAnswer =
+                Safe.text(text);
+
+        }
+
+
+        return message;
+
+    },
+
+
+    scrollChat(){
+
+        const chat =
+            this.elements.chatMessages;
+
+
+        if(chat){
+
+            requestAnimationFrame(
+                ()=>{
+                    chat.scrollTop =
+                        chat.scrollHeight;
+                }
+            );
+
+        }
+
+    },
+
+
+    /* --------------------------------------------------------
+       TYPING
+    -------------------------------------------------------- */
+
+    showTyping(){
+
+        this.removeTyping();
+
+
+        const container =
+            this.elements.chatMessages;
+
+
+        if(!container){
+
+            return;
+
+        }
+
+
+        const typing =
+            document.createElement(
+                "div"
+            );
+
+
+        typing.id =
+            "nyoreTyping";
+
+
+        typing.className =
+            "message bot";
+
+
+        typing.innerHTML = `
+            <div class="typing">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        `;
+
+
+        container.appendChild(
+            typing
+        );
+
+
+        this.scrollChat();
+
+    },
+
+
+    removeTyping(){
+
+        const typing =
+            this.el(
+                "nyoreTyping"
+            );
+
+
+        if(typing){
+
+            typing.remove();
+
+        }
+
+    },
+
+
+    /* --------------------------------------------------------
+       ENVIO DEFINITIVO
+    -------------------------------------------------------- */
+
+    send(){
+
+        /*
+            Proteção contra:
+            - clique duplo
+            - spam
+            - chamadas simultâneas
+        */
+
+        if(this.sending){
+
+            return;
+
+        }
+
+
+        const input =
+            this.elements.messageInput;
+
+
+        const button =
+            this.elements.sendButton;
+
+
+        if(!input){
+
+            Toast.show(
+                "Campo de mensagem indisponível."
+            );
+
+            return;
+
+        }
+
+
+        const text =
+            input.value.trim();
+
+
+        if(!text){
+
+            input.focus();
+
+            return;
+
+        }
+
+
+        this.sending = true;
+
+
+        if(button){
+
+            button.disabled = true;
+
+        }
+
+
+        /*
+            Primeiro mostramos a mensagem.
+        */
+
+        this.addMessage(
+            "user",
+            text
+        );
+
+
+        input.value = "";
+
+
+        /*
+            Histórico.
+        */
+
+        this.history.unshift(
+            text.substring(0,80)
+        );
+
+
+        this.history =
+            this.history.slice(0,30);
+
+
+        Safe.jsonSet(
+            "nyore_v4_history",
+            this.history
+        );
+
+
+        this.renderHistory();
+
+
+        this.showTyping();
+
+
+        /*
+            O cérebro trabalha localmente.
+        */
+
+        setTimeout(
+            ()=>{
+
+                try{
+
+                    const answer =
+                        this.brain.answer(
+                            text
+                        );
+
+
+                    this.removeTyping();
+
+
+                    if(answer){
+
+                        this.addMessage(
+                            "bot",
+                            answer
+                        );
+
                     }
+
+
+                    this.updateStats();
+
+
+                }catch(error){
+
+                    console.error(
+                        "NYORE SEND ERROR:",
+                        error
+                    );
+
+
+                    this.removeTyping();
+
+
+                    this.addMessage(
+                        "bot",
+                        "Tive um erro interno ao processar essa mensagem. A aplicação continua ativa; tenta novamente.",
+                        true
+                    );
+
+
+                    Toast.show(
+                        "Erro recuperado automaticamente."
+                    );
+
                 }
 
-                // 1. Busca resposta exata
-                let respostaMapeada = this.buscarPerguntaDireta(t);
-                if (respostaMapeada) return respostaMapeada;
 
-                // 2. Extrai termos de perguntas normais
-                const padroesPerguntas = [
-                    "oque e", "oq e", "o que e", "quem e", "quais sao", 
-                    "como sao", "quando", "fala sobre", "me diz sobre", "explica sobre", "explica"
-                ];
+                this.sending = false;
 
-                let termoExtraido = t;
-                padroesPerguntas.forEach(p => {
-                    if (termoExtraido.startsWith(p)) {
-                        termoExtraido = termoExtraido.replace(p, "").trim();
+
+                if(button){
+
+                    button.disabled = false;
+
+                }
+
+
+                input.focus();
+
+
+            },
+            180
+        );
+
+    },
+
+
+    /* --------------------------------------------------------
+       HISTÓRICO
+    -------------------------------------------------------- */
+
+    renderHistory(){
+
+        const list =
+            this.elements.historyList;
+
+
+        if(!list){
+
+            return;
+
+        }
+
+
+        list.innerHTML = "";
+
+
+        if(
+            !this.history.length
+        ){
+
+            const empty =
+                document.createElement(
+                    "div"
+                );
+
+
+            empty.style.color =
+                "var(--text-muted)";
+
+
+            empty.style.fontSize =
+                ".78rem";
+
+
+            empty.textContent =
+                "Nenhuma conversa ainda.";
+
+
+            list.appendChild(
+                empty
+            );
+
+
+            return;
+
+        }
+
+
+        this.history
+            .slice(0,15)
+            .forEach(text => {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                button.type =
+                    "button";
+
+
+                button.className =
+                    "history-item";
+
+
+                button.textContent =
+                    text;
+
+
+                this.on(
+                    button,
+                    "click",
+                    ()=>{
+
+                        this.changeView(
+                            "chat",
+                            document.querySelector(
+                                '.nav-button[data-view="chat"]'
+                            )
+                        );
+
+
+                        this.elements
+                            .messageInput
+                            .value =
+                            text;
+
+
+                        this.elements
+                            .messageInput
+                            .focus();
+
                     }
-                });
+                );
 
-                termoExtraido = termoExtraido.replace(/(nyore|\?)/g, "").trim();
 
-                // Busca tópico
-                let resultadoMemoria = this.buscarTopico(termoExtraido);
-                if (resultadoMemoria) {
-                    return `📚 **Memória sobre ${termoExtraido.toUpperCase()}:**\n${resultadoMemoria}`;
-                }
+                list.appendChild(
+                    button
+                );
 
-                let buscaDiretaApenasTermo = this.buscarTopico(t.replace("nyore", "").trim());
-                if (buscaDiretaApenasTermo) {
-                    return `📚 **Memória sobre ${t.toUpperCase().replace("NYORE", "").trim()}:**\n${buscaDiretaApenasTermo}`;
-                }
+            });
 
-                if (["ola", "oi", "viva", "tudo bem", "boas"].some(g => t.includes(g))) {
-                    return "Sistemas operacionais, Chefão! Em que posso ajudar a avançar agora?";
-                }
+    },
 
-                if (t.includes("obrigado") || t.includes("valeu")) {
-                    return "Tamo junto, Chefão! Sempre às ordens.";
-                }
 
-                if (padroesPerguntas.some(p => t.includes(p)) || t.endsWith("?")) {
-                    return `Ainda não tenho essa informação sobre **${termoExtraido || raw}** na minha base, Chefão. Podes ensinar-me dizendo: *"Nyore, aprende que ${termoExtraido || 'tópico'}: [explicação]"*!`;
-                }
+    /* --------------------------------------------------------
+       NOVA CONVERSA
+    -------------------------------------------------------- */
 
-                return "Compreendido, Chefão! Acompanhando a conversa.";
+    newConversation(){
+
+        if(!this.brain){
+
+            return;
+
+        }
+
+
+        this.brain.context = [];
+
+        this.brain.saveContext();
+
+
+        this.elements.chatMessages
+            .innerHTML = "";
+
+
+        this.addMessage(
+            "bot",
+            "Nova conversa iniciada. 🧠\n\nEstou pronta para continuar."
+        );
+
+
+        this.brain.stats.conversations++;
+
+        this.brain.saveStats();
+
+
+        this.closeMenu();
+
+        this.updateStats();
+
+    },
+
+
+    /* --------------------------------------------------------
+       LIMPAR
+    -------------------------------------------------------- */
+
+    clearEverything(){
+
+        const confirmed =
+            window.confirm(
+                "Queres realmente apagar a memória, contexto e histórico da NYORE?"
+            );
+
+
+        if(!confirmed){
+
+            return;
+
+        }
+
+
+        try{
+
+            this.brain.clearMemory();
+
+
+            this.history = [];
+
+
+            localStorage.removeItem(
+                "nyore_v4_history"
+            );
+
+
+            this.brain.stats.messages = 0;
+
+            this.brain.stats.conversations = 0;
+
+            this.brain.saveStats();
+
+
+            this.renderHistory();
+
+
+            this.elements.chatMessages
+                .innerHTML = "";
+
+
+            this.addMessage(
+                "bot",
+                "Memória limpa com sucesso. 🧠\n\nEstou pronta para aprender novamente."
+            );
+
+
+            this.updateStats();
+
+            this.closeMenu();
+
+
+            Toast.show(
+                "Memória limpa."
+            );
+
+        }catch(error){
+
+            console.error(
+                error
+            );
+
+            Toast.show(
+                "Não foi possível limpar tudo."
+            );
+
+        }
+
+    },
+
+
+    /* --------------------------------------------------------
+       ESTATÍSTICAS
+    -------------------------------------------------------- */
+
+    updateStats(){
+
+        if(!this.brain){
+
+            return;
+
+        }
+
+
+        const values = {
+
+            knowledge:
+                this.brain
+                    .getAllKnowledge()
+                    .length,
+
+            messages:
+                this.brain
+                    .stats
+                    .messages,
+
+            conversations:
+                this.brain
+                    .stats
+                    .conversations
+
+        };
+
+
+        if(
+            this.elements
+                .knowledgeCount
+        ){
+
+            this.elements
+                .knowledgeCount
+                .textContent =
+                values.knowledge;
+
+        }
+
+
+        if(
+            this.elements
+                .messageCount
+        ){
+
+            this.elements
+                .messageCount
+                .textContent =
+                values.messages;
+
+        }
+
+
+        if(
+            this.elements
+                .conversationCount
+        ){
+
+            this.elements
+                .conversationCount
+                .textContent =
+                values.conversations;
+
+        }
+
+    },
+
+
+    /* ========================================================
+       CALCULADORA
+    ======================================================== */
+
+
+    calculatorAction(button){
+
+        if(!button){
+
+            return;
+
+        }
+
+
+        const action =
+            button.dataset.calc;
+
+
+        const value =
+            button.dataset.value;
+
+
+        if(action === "clear"){
+
+            this.calculator = "";
+
+        }
+
+
+        else if(action === "delete"){
+
+            this.calculator =
+                this.calculator.slice(
+                    0,-1
+                );
+
+        }
+
+
+        else if(action === "number"){
+
+            this.calculator +=
+                value;
+
+        }
+
+
+        else if(action === "decimal"){
+
+            this.addDecimal();
+
+        }
+
+
+        else if(action === "operator"){
+
+            this.addOperator(
+                value
+            );
+
+        }
+
+
+        else if(action === "equals"){
+
+            this.calculate();
+
+        }
+
+
+        this.updateCalculator();
+
+    },
+
+
+    addDecimal(){
+
+        const parts =
+            this.calculator.split(
+                /[+\-*/]/
+            );
+
+
+        const current =
+            parts[parts.length - 1];
+
+
+        if(
+            current.includes(".")
+        ){
+
+            return;
+
+        }
+
+
+        if(
+            !current.length
+        ){
+
+            this.calculator += "0";
+
+        }
+
+
+        this.calculator += ".";
+
+    },
+
+
+    addOperator(operator){
+
+        if(
+            !["+","-","*","/"]
+            .includes(operator)
+        ){
+
+            return;
+
+        }
+
+
+        if(!this.calculator){
+
+            if(operator === "-"){
+
+                this.calculator = "-";
+
             }
+
+            return;
+
         }
 
-        const cerebro = new CerebroNyore();
 
-        window.onload = () => { lucide.createIcons(); };
+        const last =
+            this.calculator.slice(-1);
 
-        /* =========================================================
-           GESTÃO DO MENU SLIDE (CLIQUE & SWIPE/DESLIZAR)
-           ========================================================= */
-        const sideMenu = document.getElementById("sideMenu");
-        const overlayMenu = document.getElementById("overlayMenu");
 
-        function abrirMenu() {
-            sideMenu.classList.add("open");
-            overlayMenu.classList.add("active");
+        if(
+            ["+","-","*","/"]
+            .includes(last)
+        ){
+
+            this.calculator =
+                this.calculator.slice(
+                    0,-1
+                );
+
         }
 
-        function fecharMenu() {
-            sideMenu.classList.remove("open");
-            overlayMenu.classList.remove("active");
+
+        this.calculator +=
+            operator;
+
+    },
+
+
+    updateCalculator(){
+
+        const display =
+            this.elements
+                .calculatorDisplay;
+
+
+        if(!display){
+
+            return;
+
         }
 
-        // Sistema de Swipe (Deslizar o dedo na tela)
-        let touchStartX = 0;
-        let touchEndX = 0;
 
-        document.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, false);
+        display.value =
+            this.calculator
+                .replace(
+                    /\*/g,
+                    "×"
+                )
+                .replace(
+                    /\//g,
+                    "÷"
+                );
 
-        document.addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleGesture();
-        }, false);
+    },
 
-        function handleGesture() {
-            // Deslizar da esquerda para a direita (Abrir)
-            if (touchEndX - touchStartX > 70 && touchStartX < 50) {
-                abrirMenu();
+
+    calculate(){
+
+        if(!this.calculator){
+
+            return;
+
+        }
+
+
+        try{
+
+            const expression =
+                this.calculator;
+
+
+            /*
+                Segurança:
+                só permitimos números,
+                operadores, ponto e parênteses.
+            */
+
+            if(
+                !/^[0-9+\-*/().\s]+$/
+                .test(expression)
+            ){
+
+                throw new Error(
+                    "Expressão inválida"
+                );
+
             }
-            // Deslizar da direita para a esquerda (Fechar)
-            if (touchStartX - touchEndX > 70 && sideMenu.classList.contains("open")) {
-                fecharMenu();
+
+
+            const result =
+                MathParser.parse(
+                    expression
+                );
+
+
+            if(
+                !Number.isFinite(
+                    result
+                )
+            ){
+
+                throw new Error(
+                    "Resultado inválido"
+                );
+
             }
+
+
+            this.calculator =
+                String(
+                    Number(
+                        result.toFixed(12)
+                    )
+                );
+
+
+        }catch(error){
+
+            console.warn(
+                "Calculadora:",
+                error
+            );
+
+
+            this.calculator =
+                "";
+
+
+            Toast.show(
+                "Expressão matemática inválida."
+            );
+
         }
 
-        function mudarAba(aba, btn) {
-            document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`view-${aba}`).classList.add('active');
-            btn.classList.add('active');
-            fecharMenu();
+    },
+
+
+    /* ========================================================
+       VOZ
+    ======================================================== */
+
+    startVoice(){
+
+        const Recognition =
+            window.SpeechRecognition ||
+            window.webkitSpeechRecognition;
+
+
+        if(!Recognition){
+
+            Toast.show(
+                "Reconhecimento de voz não suportado neste dispositivo."
+            );
+
+            return;
+
         }
 
-        /* =========================================================
-           SISTEMA DE CHAT E HISTÓRICO
-           ========================================================= */
-        let historico = JSON.parse(localStorage.getItem("nyore_hist")) || [];
 
-        function adicionarMensagem(autor, texto) {
-            const container = document.getElementById("chat-container");
-            const div = document.createElement("div");
-            div.classList.add("msg", autor === "Tu" ? "user-msg" : "bot-msg");
-            div.innerText = texto;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
+        if(this.voice){
+
+            try{
+
+                this.voice.stop();
+
+            }catch(_){}
+
         }
 
-        function enviarForm(e) {
-            if (e) e.preventDefault();
-            const input = document.getElementById("chatInput");
-            const texto = input.value;
-            if (!texto.trim()) return;
 
-            adicionarMensagem("Tu", texto);
-            input.value = "";
+        const recognition =
+            new Recognition();
 
-            
+
+        this.voice =
+            recognition;
+
+
+        recognition.lang =
+            "pt-PT";
+
+
+        recognition.interimResults =
+            false;
+
+
+        recognition.maxAlternatives =
+            1;
+
+
+        recognition.onstart = ()=>{
+
+            Toast.show(
+                "Estou a ouvir..."
+            );
+
+        };
+
+
+        recognition.onresult =
+            event => {
+
+                try{
+
+                    const transcript =
+                        event
+                        .results[0][0]
+                        .transcript;
+
+
+                    this.elements
+                        .messageInput
+                        .value =
+                        transcript;
+
+
+                    this.elements
+                        .messageInput
+                        .focus();
+
+                }catch(error){
+
+                    console.warn(
+                        error
+                    );
+
+                }
+
+            };
+
+
+        recognition.onerror =
+            event => {
+
+                console.warn(
+                    "Voice:",
+                    event.error
+                );
+
+
+                Toast.show(
+                    "Não consegui utilizar o microfone."
+                );
+
+            };
+
+
+        recognition.onend =
+            ()=>{
+
+                this.voice = null;
+
+            };
+
+
+        try{
+
+            recognition.start();
+
+        }catch(error){
+
+            console.warn(
+                error
+            );
+
+            this.voice = null;
+
+        }
+
+    },
+
+
+    /* ========================================================
+       SPEECH
+    ======================================================== */
+
+    speakLast(){
+
+        if(!this.lastAnswer){
+
+            Toast.show(
+                "Ainda não existe uma resposta para ler."
+            );
+
+            return;
+
+        }
+
+
+        if(
+            !("speechSynthesis" in window)
+        ){
+
+            Toast.show(
+                "Leitura de voz não suportada."
+            );
+
+            return;
+
+        }
+
+
+        try{
+
+            speechSynthesis.cancel();
+
+
+            const utterance =
+                new SpeechSynthesisUtterance(
+                    this.lastAnswer
+                );
+
+
+            utterance.lang =
+                "pt-PT";
+
+
+            utterance.rate =
+                .95;
+
+
+            utterance.pitch =
+                1;
+
+
+            speechSynthesis.speak(
+                utterance
+            );
+
+        }catch(error){
+
+            console.warn(
+                error
+            );
+
+            Toast.show(
+                "Não foi possível reproduzir a voz."
+            );
+
+        }
+
+    },
+
+
+    /* ========================================================
+       RECUPERAÇÃO
+    ======================================================== */
+
+    recover(){
+
+        /*
+            Se a aplicação entrar numa condição
+            estranha, o campo de entrada continua
+            disponível.
+        */
+
+        if(
+            this.elements.messageInput
+        ){
+
+            this.elements.messageInput
+                .disabled = false;
+
+        }
+
+
+        if(
+            this.elements.sendButton
+        ){
+
+            this.elements.sendButton
+                .disabled = false;
+
+        }
+
+
+        this.sending = false;
+
+
+        /*
+            Remove eventual indicador preso.
+        */
+
+        this.removeTyping();
+
+    }
+
+};
+
+
+/* ============================================================
+   PARSER MATEMÁTICO
+   SEM EVAL()
+============================================================ */
+
+const MathParser = {
+
+
+    parse(expression){
+
+        const tokens =
+            expression.match(
+                /(\d+(?:\.\d+)?)|[+\-*/()]|./g
+            );
+
+
+        if(!tokens){
+
+            throw new Error(
+                "Expressão vazia"
+            );
+
+        }
+
+
+        /*
+            Rejeitar caracteres desconhecidos.
+        */
+
+        for(
+            const token
+            of tokens
+        ){
+
+            if(
+                !/^\d+(?:\.\d+)?$/.test(token) &&
+                !/^[+\-*/()]$/.test(token)
+            ){
+
+                throw new Error(
+                    "Caractere inválido"
+                );
+
+            }
+
+        }
+
+
+        let position = 0;
+
+
+        function expression(){
+
+            let value =
+                term();
+
+
+            while(
+                tokens[position] === "+" ||
+                tokens[position] === "-"
+            ){
+
+                const operator =
+                    tokens[position++];
+
+
+                const right =
+                    term();
+
+
+                if(operator === "+"){
+
+                    value += right;
+
+                }else{
+
+                    value -= right;
+
+                }
+
+            }
+
+
+            return value;
+
+        }
+
+
+        function term(){
+
+            let value =
+                factor();
+
+
+            while(
+                tokens[position] === "*" ||
+                tokens[position] === "/"
+            ){
+
+                const operator =
+                    tokens[position++];
+
+
+                const right =
+                    factor();
+
+
+                if(operator === "*"){
+
+                    value *= right;
+
+                }else{
+
+                    if(right === 0){
+
+                        throw new Error(
+                            "Divisão por zero"
+                        );
+
+                    }
+
+                    value /= right;
+
+                }
+
+            }
+
+
+            return value;
+
+        }
+
+
+        function factor(){
+
+            const token =
+                tokens[position];
+
+
+            if(token === "+"){
+
+                position++;
+
+                return factor();
+
+            }
+
+
+            if(token === "-"){
+
+                position++;
+
+                return -factor();
+
+            }
+
+
+            if(token === "("){
+
+                position++;
+
+
+                const value =
+                    expression();
+
+
+                if(
+                    tokens[position] !== ")"
+                ){
+
+                    throw new Error(
+                        "Parênteses incorretos"
+                    );
+
+                }
+
+
+                position++;
+
+
+                return value;
+
+            }
+
+
+            if(
+                token === undefined ||
+                !/^\d+(?:\.\d+)?$/
+                .test(token)
+            ){
+
+                throw new Error(
+                    "Número esperado"
+                );
+
+            }
+
+
+            position++;
+
+
+            return Number(token);
+
+        }
+
+
+        const result =
+            expression();
+
+
+        if(
+            position !== tokens.length
+        ){
+
+            throw new Error(
+                "Expressão incompleta"
+            );
+
+        }
+
+
+        return result;
+
+    }
+
+};
+
+
+/* ============================================================
+   INICIALIZAÇÃO RESISTENTE
+============================================================ */
+
+function startNyore(){
+
+    try{
+
+        App.init();
+
+
+    }catch(error){
+
+        /*
+            Última camada de proteção.
+            Se houver um problema inesperado
+            durante a inicialização, tentamos
+            manter pelo menos o envio básico.
+        */
+
+        console.error(
+            "NYORE INITIALIZATION ERROR:",
+            error
+        );
+
+
+        const input =
+            document.getElementById(
+                "messageInput"
+            );
+
+
+        const button =
+            document.getElementById(
+                "sendButton"
+            );
+
+
+        if(
+            input &&
+            button
+        ){
+
+            button.onclick =
+                function(){
+
+                    if(
+                        input.value.trim()
+                    ){
+
+                        alert(
+                            "NYORE: " +
+                            input.value.trim()
+                        );
+
+                        input.value = "";
+
+                    }
+
+                };
+
+        }
+
+    }
+
+}
+
+
+/*
+    O script pode estar no final do body,
+    mas usamos DOMContentLoaded para tornar
+    a inicialização independente da forma como
+    o WebView carrega o documento.
+*/
+
+if(
+    document.readyState ===
+    "loading"
+){
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        startNyore,
+        {
+            once:true
+        }
+    );
+
+}else{
+
+    startNyore();
+
+}
+
+</script>
+
+</body>
+</html>
